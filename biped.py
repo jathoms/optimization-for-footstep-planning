@@ -35,8 +35,6 @@ def get_constraints(model: gp.Model, all_hulls=hulls, start=points[0], end=obj_c
         [np.array([coords[-1] for coords in hull.equations]) for hull in all_hulls], dtype=object)
     A = all_constrs
     b = all_rhs
-    for hull in all_hulls:
-        print(hull.equations)
 
     x = model.addMVar((steps, n), lb=-gp.GRB.INFINITY, ub=gp.GRB.INFINITY)
     dists = model.addMVar((steps, n), ub=gp.GRB.INFINITY, lb=-gp.GRB.INFINITY)
