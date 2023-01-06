@@ -1,0 +1,9 @@
+create bipedality:
+    alternate foot, alternating constraints.
+    constraint: foot a distance from foot b < l, foot a doesn't cross over foot b.
+    done.
+
+create custom environments:
+    square creation function, taking in center and size.
+    rectangle creation function, taking in center and sizev, sizeh.
+    bro just do the second one
