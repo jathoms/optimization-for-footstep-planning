@@ -9,7 +9,8 @@ create custom environments:
     bro just do the second one
     done.
 
-dessert: implement a machhine learning solution (independent of the optimizer?):
+    possible problem: straddling regions
+
+dessert: implement a machine learning solution (independent of the optimizer?):
     how.
     ]]]
-    
