@@ -3,13 +3,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.spatial import ConvexHull
 from sklearn import cluster
+import io
+import sys
 
-m = 16  # number of wanted regions
+m = 16  # number of wanted regions (default)
 n = 2  # dimension of space
-steps = 2  # number of steps in solution
+steps = 1  # default number of steps in solution
 first_foot_forward = 'left'
 min_foot_separation_h = 0.1
-reachable_distance = 0.4
+default_dist = 0.6
 
 rng = np.random.default_rng(seed=70)
 # m * 50 random points in n-D
@@ -28,7 +30,15 @@ hulls = [ConvexHull(points[label == i]) for i in u_labels]
 M = 1000
 
 
-def get_constraints(model: gp.Model, all_hulls=hulls, start=points[0], end=obj_coords, no_regions=m, steps_taken=steps, decreasing_steps=False):
+def get_constraints(model: gp.Model,
+                    all_hulls=hulls,
+                    start=points[0],
+                    end=obj_coords,
+                    no_regions=m,
+                    steps_taken=steps,
+                    decreasing_steps=False,
+                    reachable_distance=default_dist):
+
     all_constrs = np.array(
         [np.array([coords[:n] for coords in hull.equations]) for hull in all_hulls], dtype=object)
     all_rhs = np.array(
@@ -72,22 +82,34 @@ def get_constraints(model: gp.Model, all_hulls=hulls, start=points[0], end=obj_c
                 model.addConstr(
                     rhs[i][j][k] == -(b[j][k]) + ((1 - active[i, j]) * M))
             model.addConstr(A[j] @ x[i] <= rhs[i][j])
+    buffer = io.StringIO()
+    # print(f"buffering for {steps_taken} steps")
+    sys.stdout = buffer
     model.optimize()
+    print(steps_taken, "steps taken.")
+    print(model.NodeCount, " nodes traversed.")
+    sys.stdout = sys.__stdout__
+    output = buffer.getvalue()
+
     if model.Status == gp.GRB.INFEASIBLE:
         print(f"Problem is infeasible for {steps_taken} steps.")
         if steps_taken > 100:
             return
         if not decreasing_steps:
             get_constraints(gp.Model(f'{steps_taken*2}_steps'), all_hulls, start, end,
-                            no_regions, steps_taken*2)
+                            no_regions, steps_taken*2, reachable_distance=reachable_distance)
             return
         else:
             return model.Status
     decrease_amount = 15/16
+    print(
+        f"Feasible solution found for {steps_taken} steps, attempting to reduce number of steps (factor {decrease_amount})")
     res = get_constraints(gp.Model(f'{steps_taken*decrease_amount}_steps'), all_hulls, start, end,
-                          no_regions, int(steps_taken*(decrease_amount)), decreasing_steps=True)
+                          no_regions, int(steps_taken*(decrease_amount)), decreasing_steps=True, reachable_distance=reachable_distance)
     if res == gp.GRB.INFEASIBLE:
+        # print("@@@@@@@@@@@@@@@@@@@\n", output, "\n@@@@@@@@@@@@@@@@@@@@")
         try:
+            open("log.txt", "w").writelines(output)
             for idx, point in enumerate(x):
                 x, y = point.X[0], point.X[1]
 
@@ -107,14 +129,14 @@ def get_constraints(model: gp.Model, all_hulls=hulls, start=points[0], end=obj_c
                      alpha=0.5)
             print("Start Point:", start, "\nEnd Point:", end)
             print(
-                f"Near optimal with {steps_taken} steps (within {steps_taken - (steps_taken*decrease_amount)} steps)")
+                f"Near optimal with {steps_taken} steps (within {int(steps_taken - (steps_taken*decrease_amount))} steps)")
         except gp.GurobiError:
             print(f"Problem is infeasible for {steps_taken} steps.")
             if steps_taken > 100:
                 return
             if not decreasing_steps:
                 get_constraints(gp.Model(f'{steps_taken*2}_steps'), all_hulls, start, end,
-                                no_regions, steps_taken*2)
+                                no_regions, steps_taken*2, reachable_distance=reachable_distance)
                 return
             else:
                 return model.Status
