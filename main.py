@@ -46,17 +46,15 @@ import numpy as np
 # region_centers = np.array([[0.5, 2.5], [-1.5, -1.5], [1.0, 0.0], [3.5, 2.0], [-2.5, 3.5], [-3.5, -0.5], [2.5, 3.5], [1.5, -3.5], [3.0, 0.5], [-2.0, -2.0], [-0.5, 2.0], [0.0, -3.0], [-1.0, 1.5], [2.0, -1.0], [
 #                           3.0, 3.0], [-2.5, 1.0], [1.5, -0.5], [-3.5, 2.5], [-0.5, -1.5], [2.0, 3.0], [-1.5, 3.0], [0.5, -2.5], [2.5, 1.0], [-2.0, 0.5], [1.0, 2.5], [-3.0, 3.0], [0.5, 1.5], [-1.0, -0.5], [3.0, -3.0], [1.5, 2.5], [-3.5, 0.5], [-3.0, -2.5]])
 
-# region_centers = np.array([[-10, 10], [-7, 8], [-4, 5], [-9, -6], [-5, -2], [-2, 3], [1, 7], [4, -8], [7, -10], [-12, -3], [10, -6], [13, -1], [15, 2], [11, -9], [14, -13], [-8, -13], [0, -14], [12, -15], [-6, -12], [-9, -9], [-15, -15], [
-#                           2, -18], [6, -20], [10, -23], [-11, -25], [14, -27], [19, -30], [-15, -32], [-10, -28], [-5, -24], [0, -20], [5, -16], [10, -12], [-7, -8], [14, -4], [18, 0], [22, 4], [-17, 8], [26, 12], [30, 16], [-20, 20], [34, 24], [38, 28], [42, 32]])
 
 test_cases = {}
 no_steps = {}
 step_dist = {}
 
 
-no_steps["Fig 1"] = 46
-step_dist["Fig 1"] = 0.6
-test_cases["Fig 1"] = np.array([[18.8, 1.7],  # 0.6
+no_steps["Fig_1"] = 46
+step_dist["Fig_1"] = 0.6
+test_cases["Fig_1"] = np.array([[18.8, 1.7],  # 0.6
                                 [18.8, 3.4],
                                 [18.85, 5.55],
                                 [18.65, 8.15],
@@ -111,9 +109,9 @@ test_cases["Fig 1"] = np.array([[18.8, 1.7],  # 0.6
                                 [20.15, 9.1],
                                 [22.8, 14.65]])
 
-no_steps["Fig 2"] = 36  # path doesn't take entire spiral
-step_dist["Fig 2"] = 1.3
-test_cases["Fig 2"] = test_cases["big_Spiral"] = np.array([[18.65, 14.8],
+no_steps["Fig_2"] = 36  # path doesn't take entire spiral
+step_dist["Fig_2"] = 1.5
+test_cases["Fig_2"] = test_cases["big_Spiral"] = np.array([[18.65, 14.8],
                                                            [15.75, 14.85],
                                                            [21.1, 14.25],
                                                            [23.65, 12.85],
@@ -173,9 +171,9 @@ test_cases["Fig 2"] = test_cases["big_Spiral"] = np.array([[18.65, 14.8],
                                                            [20.4, 12.05],
                                                            [19.5, 12.5]])
 
-no_steps["Fig 3"] = 29
-step_dist["Fig 3"] = 1.8
-test_cases["Fig 3"] = test_cases["Spiral"] = np.array([[14.25, 14.6],
+no_steps["Fig_3"] = 29
+step_dist["Fig_3"] = 1.8
+test_cases["Fig_3"] = test_cases["Spiral"] = np.array([[14.25, 14.6],
                                                        [16.15, 14.95],
                                                        [18.45, 14.95],
                                                        [20.19, 15.41],
@@ -193,13 +191,13 @@ test_cases["Fig 3"] = test_cases["Spiral"] = np.array([[14.25, 14.6],
                                                        [17.0, 11.65],
                                                        [18.7, 11.65], ])
 
-no_steps["Fig 4"] = 1
-step_dist["Fig 4"] = 3
-test_cases["Fig 4"] = np.array([[17.7, 8.2],
+no_steps["Fig_4"] = 1
+step_dist["Fig_4"] = 3
+test_cases["Fig_4"] = np.array([[6.75, 8.85],
+                                [17.7, 8.2],
                                 [14.65, 8.25],
                                 [11.9, 8.35],
                                 [9.25, 8.55],
-                                [6.75, 8.85],
                                 [22.55, 10.55],
                                 [20.55, 8.55],
                                 [20.65, 12.7],
@@ -211,7 +209,13 @@ test_cases["Fig 4"] = np.array([[17.7, 8.2],
                                 [4.95, 12.95],
                                 [2.4, 12.35]])
 
-env = "Fig 4"
+step_dist["Fig_5"] = 2
+no_steps["Fig_5"] = 1
+test_cases["Fig_5"] = np.array([[-10, 10], [-7, 8], [-4, 5], [-9, -6], [-5, -2], [-2, 3], [1, 7], [4, -8], [7, -10], [-12, -3], [10, -6], [13, -1], [15, 2], [11, -9], [14, -13], [-8, -13], [0, -14], [12, -15], [-6, -12], [-9, -9], [-15, -15], [
+    2, -18], [6, -20], [10, -23], [-11, -25], [14, -27], [19, -30], [-15, -32], [-10, -28], [-5, -24], [0, -20], [5, -16], [10, -12], [-7, -8], [14, -4], [18, 0], [22, 4], [-17, 8], [26, 12], [30, 16], [-20, 20], [34, 19], [38, 23], [42, 27]])
+
+env = "Fig_5"
+
 
 region_centers = test_cases[env]
 # reachable_distance = step_dist[env]
@@ -219,13 +223,14 @@ steps_taken = no_steps[env]
 
 hulls = []
 
-hulls = [createSquare(center, 0.3) for center in region_centers]
+hulls = [createSquare(center, 1) for center in region_centers]
 
+env_filename = env + "_log.txt"
 model = gp.Model('optimizer')
-model.Params.LogFile = "log.txt"
-open("log.txt", "w").write("")
+model.Params.LogFile = env_filename
+open(env_filename, "w").write("")
 
 biped.get_constraints(
-    model, hulls, start=region_centers[0], end=region_centers[-1], no_regions=len(region_centers), steps_taken=no_steps[env], reachable_distance=step_dist[env])
+    model, hulls, start=region_centers[0], end=region_centers[-1], no_regions=len(region_centers), steps_taken=no_steps[env], reachable_distance=step_dist[env], logfile=env_filename)
 plt.axis('scaled')
 plt.show()

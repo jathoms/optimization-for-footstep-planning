@@ -37,7 +37,8 @@ def get_constraints(model: gp.Model,
                     no_regions=m,
                     steps_taken=steps,
                     decreasing_steps=False,
-                    reachable_distance=default_dist):
+                    reachable_distance=default_dist,
+                    logfile="log.txt"):
 
     all_constrs = np.array(
         [np.array([coords[:n] for coords in hull.equations]) for hull in all_hulls], dtype=object)
@@ -97,7 +98,7 @@ def get_constraints(model: gp.Model,
             return
         if not decreasing_steps:
             get_constraints(gp.Model(f'{steps_taken*2}_steps'), all_hulls, start, end,
-                            no_regions, steps_taken*2, reachable_distance=reachable_distance)
+                            no_regions, steps_taken*2, reachable_distance=reachable_distance, logfile=logfile)
             return
         else:
             return model.Status
@@ -105,11 +106,11 @@ def get_constraints(model: gp.Model,
     print(
         f"Feasible solution found for {steps_taken} steps, attempting to reduce number of steps (factor {decrease_amount})")
     res = get_constraints(gp.Model(f'{steps_taken*decrease_amount}_steps'), all_hulls, start, end,
-                          no_regions, int(steps_taken*(decrease_amount)), decreasing_steps=True, reachable_distance=reachable_distance)
+                          no_regions, int(steps_taken*(decrease_amount)), decreasing_steps=True, reachable_distance=reachable_distance, logfile=logfile)
     if res == gp.GRB.INFEASIBLE:
         # print("@@@@@@@@@@@@@@@@@@@\n", output, "\n@@@@@@@@@@@@@@@@@@@@")
         try:
-            open("log.txt", "w").writelines(output)
+            open(logfile, "w").writelines(output)
             for idx, point in enumerate(x):
                 x, y = point.X[0], point.X[1]
 
@@ -136,7 +137,7 @@ def get_constraints(model: gp.Model,
                 return
             if not decreasing_steps:
                 get_constraints(gp.Model(f'{steps_taken*2}_steps'), all_hulls, start, end,
-                                no_regions, steps_taken*2, reachable_distance=reachable_distance)
+                                no_regions, steps_taken*2, reachable_distance=reachable_distance, logfile=logfile)
                 return
             else:
                 return model.Status
