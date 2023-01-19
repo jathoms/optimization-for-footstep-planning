@@ -12,7 +12,7 @@ Coefficient statistics:
   RHS range        [1e-01, 1e+03]
   QRHS range       [2e+00, 2e+00]
 Presolve removed 14808 rows and 8830 columns
-Presolve time: 0.13s
+Presolve time: 0.14s
 Presolved: 173 rows, 872 columns, 4124 nonzeros
 Presolved model has 32 quadratic constraint(s)
 Variable types: 82 continuous, 790 integer (790 binary)
@@ -38,8 +38,8 @@ Root relaxation: objective 0.000000e+00, 174 iterations, 0.00 seconds (0.00 work
      0     0    0.00000    0    9          -    0.00000      -     -    0s
      0     0    0.00000    0    9          -    0.00000      -     -    0s
      0     2    0.00000    0    9          -    0.00000      -     -    0s
-H 7300   224                       0.0000000    0.00000  0.00%  19.1    2s
-* 7300   224              34       0.0000000    0.00000  0.00%  19.1    2s
+H 7300   224                       0.0000000    0.00000  0.00%  19.1    3s
+* 7300   224              34       0.0000000    0.00000  0.00%  19.1    3s
 
 Cutting planes:
   Gomory: 2
@@ -53,7 +53,7 @@ Cutting planes:
   Zero half: 1
   Relax-and-lift: 1
 
-Explored 8037 nodes (147947 simplex iterations) in 2.94 seconds (2.41 work units)
+Explored 8037 nodes (147947 simplex iterations) in 3.46 seconds (2.41 work units)
 Thread count was 8 (of 8 available processors)
 
 Solution count 1: 0 

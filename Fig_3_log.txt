@@ -50,7 +50,7 @@ Cutting planes:
   RLT: 2
   Relax-and-lift: 6
 
-Explored 2027 nodes (16279 simplex iterations) in 0.22 seconds (0.19 work units)
+Explored 2027 nodes (16279 simplex iterations) in 0.23 seconds (0.19 work units)
 Thread count was 8 (of 8 available processors)
 
 Solution count 1: 0 
