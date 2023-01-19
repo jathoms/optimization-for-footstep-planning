@@ -47,7 +47,7 @@ Cutting planes:
   GUB cover: 17
   Relax-and-lift: 4
 
-Explored 623 nodes (11308 simplex iterations) in 0.41 seconds (0.30 work units)
+Explored 623 nodes (11308 simplex iterations) in 0.38 seconds (0.30 work units)
 Thread count was 8 (of 8 available processors)
 
 Solution count 1: 0 

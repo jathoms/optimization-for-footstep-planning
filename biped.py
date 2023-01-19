@@ -5,6 +5,8 @@ from scipy.spatial import ConvexHull
 from sklearn import cluster
 import io
 import sys
+from graph_construction import linearise_reachable_region
+from math import pi
 
 m = 16  # number of wanted regions (default)
 n = 2  # dimension of space
@@ -47,8 +49,8 @@ def get_constraints(model: gp.Model,
     A = all_constrs
     b = all_rhs
     print(steps_taken, "STEPS TAKEN")
-    x: gp.MVar = model.addMVar((steps_taken, n), lb=-
-                               gp.GRB.INFINITY, ub=gp.GRB.INFINITY)
+    contact_points_vector: gp.MVar = model.addMVar((steps_taken, n), lb=-
+                                                   gp.GRB.INFINITY, ub=gp.GRB.INFINITY)
     dists: gp.MVar = model.addMVar(
         (steps_taken, n), ub=gp.GRB.INFINITY, lb=-gp.GRB.INFINITY)
     active = model.addVars(steps_taken, no_regions, vtype=gp.GRB.BINARY)
@@ -60,29 +62,30 @@ def get_constraints(model: gp.Model,
                                         gp.GRB.INFINITY, ub=gp.GRB.INFINITY))
         model.addConstr(sum([active[i, j] for j in range(no_regions)]) == 1)
 
-    model.addConstr(x[-1] == end)
-    model.addConstr(x[0] == start)
+    model.addConstr(contact_points_vector[-1] == end)
+    model.addConstr(contact_points_vector[0] == start)
 
     # bipedality constraint.
     if first_foot_forward == 'right':
-        model.addConstrs(x[i][0] <= x[i+1][0] -
+        model.addConstrs(contact_points_vector[i][0] <= contact_points_vector[i+1][0] -
                          min_foot_separation_h for i in range(0, steps_taken-1, 2))
-        model.addConstrs(x[i+1][0] >= x[i+2][0] +
+        model.addConstrs(contact_points_vector[i+1][0] >= contact_points_vector[i+2][0] +
                          min_foot_separation_h for i in range(0, steps_taken-2, 2))
     else:
-        model.addConstrs(x[i][0] >= x[i+1][0] +
+        model.addConstrs(contact_points_vector[i][0] >= contact_points_vector[i+1][0] +
                          min_foot_separation_h for i in range(0, steps_taken-1, 2))
-        model.addConstrs(x[i+1][0] <= x[i+2][0] -
+        model.addConstrs(contact_points_vector[i+1][0] <= contact_points_vector[i+2][0] -
                          min_foot_separation_h for i in range(0, steps_taken-2, 2))
     for i in range(steps_taken - 1):
-        model.addConstr(dists[i] == (x[i] - x[i+1]))
+        model.addConstr(dists[i] == (
+            contact_points_vector[i] - contact_points_vector[i+1]))
         model.addConstr(dists[i] @ dists[i] <= reachable_distance**2)
         # model.addConstr(dists[i] @ dists[i] >= foot_size)
         for j in range(no_regions):
             for k in range(len(b[j])):
                 model.addConstr(
                     rhs[i][j][k] == -(b[j][k]) + ((1 - active[i, j]) * M))
-            model.addConstr(A[j] @ x[i] <= rhs[i][j])
+            model.addConstr(A[j] @ contact_points_vector[i] <= rhs[i][j])
     buffer = io.StringIO()
     # print(f"buffering for {steps_taken} steps")
     sys.stdout = buffer
@@ -111,19 +114,28 @@ def get_constraints(model: gp.Model,
         # print("@@@@@@@@@@@@@@@@@@@\n", output, "\n@@@@@@@@@@@@@@@@@@@@")
         try:
             open(logfile, "w").writelines(output)
-            for idx, point in enumerate(x):
+            for idx, point in enumerate(contact_points_vector):
                 x, y = point.X[0], point.X[1]
+                # plot footstep positions and linearised version of reachable region from each step
+                if idx <= steps_taken-1:
 
+                    plt.plot([step.X[0] for step in contact_points_vector[idx:idx+2]],
+                             [step.X[1] for step in contact_points_vector[idx:idx+2]], ":", color="black")
+                    # print(x, y)
+                    # print([step.X[0]
+                    #       for step in contact_points_vector[idx:idx+2]])
+                    # #   [step.X[1] for step in contact_points_vector[idx:idx+1]])
                 if idx % 2 == 0:
                     plt.plot(x, y, marker="x", markersize=10,
                              markerfacecolor="blue", markeredgecolor="blue")
+                    linearise_reachable_region(reachable_distance, 10, [
+                                               x, y], foot='right' if first_foot_forward == 'left' else 'right', offset=min_foot_separation_h)
                 else:
                     plt.plot(x, y, marker="x", markersize=10,
                              markerfacecolor="green", markeredgecolor="green")
-                # print("Made step at:", point.X)
-            # for i in range(steps):
-            #     print("Step region {}: ".format(i),
-            #           ([active[i, j].X for j in range(m)]))
+                    linearise_reachable_region(reachable_distance, 10, [
+                                               x, y], foot='left' if first_foot_forward == 'left' else 'right', offset=min_foot_separation_h)
+
             plt.plot(end[0], end[1], marker="o", markersize=10, markeredgecolor="red", markerfacecolor="red",
                      alpha=0.5)
             plt.plot(start[0], start[1], marker="o", markersize=10, markeredgecolor="green", markerfacecolor="green",
@@ -152,7 +164,3 @@ def plot_hull(hull_vertices):
         for simplex in hull.simplices:
             plt.plot(vertices_[simplex, 0], vertices_[simplex, 1], 'k-')
     return
-
-
-# plot_hull(points)
-# get_constraints(model, hulls)
