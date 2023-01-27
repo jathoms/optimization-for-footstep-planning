@@ -225,12 +225,16 @@ hulls = []
 
 hulls = [createSquare(center, 0.3) for center in region_centers]
 
-env_filename = env + "_log.txt"
-model = gp.Model('optimizer')
-model.Params.LogFile = env_filename
-open(env_filename, "w").write("")
+# env_filename = env + "_log.txt"
+# model = gp.Model('optimizer')
+# model.Params.LogFile = env_filename
+# open(env_filename, "w").write("")
 
-biped.get_constraints(
-    model, hulls, start=region_centers[0], end=region_centers[-1], no_regions=len(region_centers), steps_taken=no_steps[env], reachable_distance=step_dist[env], logfile=env_filename)
+# biped.get_constraints(
+#     model, hulls, start=region_centers[0], end=region_centers[-1], no_regions=len(region_centers), steps_taken=no_steps[env], reachable_distance=step_dist[env], logfile=env_filename)
+
+
+
+
 plt.axis('scaled')
 plt.show()

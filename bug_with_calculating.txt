@@ -1,0 +1,1 @@
+was taking reachable region from ALL points at every iteration, not just extremities.

@@ -156,11 +156,10 @@ def get_constraints(model: gp.Model,
     return -1
 
 
-def plot_hull(hull_vertices):
+def plot_hull(hull):
     plt.axes()
     for idx, hull in enumerate(hulls):
-        vertices_ = hull_vertices[label == idx]
-        # plt.scatter(vertices_, label=idx)
+        vertices_ = hull.points
         for simplex in hull.simplices:
             plt.plot(vertices_[simplex, 0], vertices_[simplex, 1], 'k-')
     return
