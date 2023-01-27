@@ -2,7 +2,6 @@ from scipy.spatial import ConvexHull
 from scipy.spatial import HalfspaceIntersection
 import numpy as np
 import math
-import gurobipy as gp
 import matplotlib.pyplot as plt
 from scipy.optimize import linprog
 
@@ -10,10 +9,12 @@ from create_environment import createSquare
 
 
 class HullSection(ConvexHull):
-    def __init__(self, parent_hull: ConvexHull, vertices: np.array(float)):
+    def __init__(self, parent_hull: ConvexHull, vertices: np.array(float), foot_in_this_hull="left"):  # default is important
         super().__init__(vertices)
         self.parent_hull = parent_hull
-        self.vision = VisionHull(self)
+        self.foot_in = foot_in_this_hull
+        self.vision = VisionHull(
+            self, "right" if foot_in_this_hull == "left" else "left")
 
     def get_vertices(self):
         return [self.points[v] for v in self.vertices]
@@ -31,7 +32,7 @@ class HullNode():
     def __init__(self, hull: HullSection | None, parent, children):
         self.hull = hull
         self.parent = parent
-        self.children = children
+        self.children: list[HullNode] = children
 
     def add_child(self, child: HullSection):
         self.children.append(HullNode(hull=child, parent=self, children=[]))
@@ -42,8 +43,9 @@ class HullNode():
 
 
 class VisionHull(ConvexHull):
-    def __init__(self, source: HullSection | list[float]):
+    def __init__(self, source: HullSection | list[float], foot):
         self.source = source
+        self.foot = foot
 
         if isinstance(self.source, HullSection):
             extremities = [self.source.points[v] for v in self.source.vertices]
@@ -55,13 +57,13 @@ class VisionHull(ConvexHull):
             plot_hull(self, color="red")
 
     def linearise_reachable_region(self, centre=[0, 0]):
-        global foot
+        # global foot
         global no_points
         global reachable_distance
         global offset
         x = []
         y = []
-        if foot == 'right':
+        if self.foot == 'right':
             initial_angle = math.pi/2
             min_x_sep = -offset
         else:
@@ -356,104 +358,115 @@ def plot_hull(hull, title="", color="black"):
     return
 
 
-env = np.array([[18.8, 1.7],  # 0.6
-                [18.8, 3.4],
-                [18.85, 5.55],
-                [18.65, 8.15],
-                [19.55, 3.25],
-                [20.4, 4],
-                [21.15, 4.65],
-                [21.65, 5.45],
-                [21.8, 6.3],
-                [21.8, 7.65],
-                [21.8, 8.55],
-                [19.75, 6.05],
-                [19.9, 6.5],
-                [20.1, 7.25],
-                [20.2, 8],
-                [18.2, 5.45],
-                [17.85, 5.85],
-                [17.85, 6.4],
-                [17.5, 7.65],
-                [17.6, 3.7],
-                [16.2, 4.25],
-                [16.1, 6.1],
-                [16, 7.15],
-                [16.05, 5.25],
-                [15.95, 7.85],
-                [15.55, 8.9],
-                [16.2, 10.1],
-                [16.65, 11.2],
-                [21.95, 9.35],
-                [22.25, 9.75],
-                [23.2, 10.7],
-                [24.2, 11.45],
-                [19.3, 9.25],
-                [19.45, 10.5],
-                [18.6, 4.4],
-                [18.75, 2.65],
-                [24.1, 12.4],
-                [23.2, 13.3],
-                [22.55, 13.7],
-                [17.05, 11.8],
-                [17.65, 12],
-                [18.2, 12.05],
-                [19.05, 12.7],
-                [19.95, 13.3],
-                [19.85, 11.5],
-                [20.2, 12.35],
-                [20.95, 8],
-                [21.15, 6.25],
-                [20.95, 7],
-                [21.85, 10.55],
-                [21.9, 11.3],
-                [22.05, 12.2],
-                [20.15, 9.1],
-                [22.8, 14.65]])
+# env = np.array([[18.8, 1.7],  # 0.6
+#                 [18.8, 3.4],
+#                 [18.85, 5.55],
+#                 [18.65, 8.15],
+#                 [19.55, 3.25],
+#                 [20.4, 4],
+#                 [21.15, 4.65],
+#                 [21.65, 5.45],
+#                 [21.8, 6.3],
+#                 [21.8, 7.65],
+#                 [21.8, 8.55],
+#                 [19.75, 6.05],
+#                 [19.9, 6.5],
+#                 [20.1, 7.25],
+#                 [20.2, 8],
+#                 [18.2, 5.45],
+#                 [17.85, 5.85],
+#                 [17.85, 6.4],
+#                 [17.5, 7.65],
+#                 [17.6, 3.7],
+#                 [16.2, 4.25],
+#                 [16.1, 6.1],
+#                 [16, 7.15],
+#                 [16.05, 5.25],
+#                 [15.95, 7.85],
+#                 [15.55, 8.9],
+#                 [16.2, 10.1],
+#                 [16.65, 11.2],
+#                 [21.95, 9.35],
+#                 [22.25, 9.75],
+#                 [23.2, 10.7],
+#                 [24.2, 11.45],
+#                 [19.3, 9.25],
+#                 [19.45, 10.5],
+#                 [18.6, 4.4],
+#                 [18.75, 2.65],
+#                 [24.1, 12.4],
+#                 [23.2, 13.3],
+#                 [22.55, 13.7],
+#                 [17.05, 11.8],
+#                 [17.65, 12],
+#                 [18.2, 12.05],
+#                 [19.05, 12.7],
+#                 [19.95, 13.3],
+#                 [19.85, 11.5],
+#                 [20.2, 12.35],
+#                 [20.95, 8],
+#                 [21.15, 6.25],
+#                 [20.95, 7],
+#                 [21.85, 10.55],
+#                 [21.9, 11.3],
+#                 [22.05, 12.2],
+#                 [20.15, 9.1],
+#                 [22.8, 14.65]])
 
-env = np.array([[0, 0], [-0.5, 1], [0.5, 1]])
+# env = np.array([[0, 0], [-0.5, 1], [0.5, 1]])
 
-world = [createSquare(center, 0.3) for center in env]
+# world = [createSquare(center, 0.3) for center in env]
 
-config = [1, 10, "right", 0.1]
+# config = [1, 10, "right", 0.1]
 
-[reachable_distance, no_points, foot, offset] = config
+# [reachable_distance, no_points, foot, offset] = config
 
-# graph_pathfind(hulls,
-#                env[0], env[-1])
+# # graph_pathfind(hulls,
+# #                env[0], env[-1])
 
-start_point = env[0]
-end_point = env[-1]
+# start_point = env[0]
+# end_point = env[-1]
 
-initial_vision = VisionHull(start_point).intersect_with_world(world)
-foot = "right" if foot == "left" else "left"
+# initial_vision = VisionHull(start_point)
+# foot = "right" if foot == "left" else "left"
+# initial_sections = initial_vision.intersect_with_world(world)
+# root = HullNode(hull=None, parent=None, children=[])
+# print('1')
+# for initial_section in initial_sections:
+#     plot_hull(initial_section, color='red')
+#     root.add_child(initial_section)
 
-root = HullNode(hull=None, parent=None, children=[])
-print('1')
-for initial_section in initial_vision:
-    plot_hull(initial_section, color='red')
-    root.add_child(initial_section)
+# current = root.children
+# new = []
+# current_vision: list[VisionHull] = []
+# foot = "right" if foot == "left" else "left"
+# for region in current:
+#     current_vision.append(VisionHull(region, region.hull.foot_in))
+# foot = "right" if foot == "left" else "left"
+# for vision in current_vision:
+#     vision.intersect_with_world(world)
 
-for hull in world:
-    plot_hull(hull)
-print('3')
-plt.axis("scaled")
-plt.show()
 
-while False:
+# for hull in world:
+#     plot_hull(hull)
+# print('3')
+# plt.axis("scaled")
+# plt.show()
 
-    new_walk_regions = []
-    for region in walk_regions:
-        print('3,4')
-        plot_hull(region, color="red")
-        print('3.5')
-        plt.show()
-        print('4')
-        new_walk_regions.extend(region.get_children_hulls(world))
-        print('5')
-    walk_regions = new_walk_regions
-    foot = "right" if foot == "left" else "left"
-    for region in walk_regions:
-        if region.contains(end_point):
-            print("success")
-            break
+# while False:
+
+#     new_walk_regions = []
+#     for region in walk_regions:
+#         print('3,4')
+#         plot_hull(region, color="red")
+#         print('3.5')
+#         plt.show()
+#         print('4')
+#         new_walk_regions.extend(region.get_children_hulls(world))
+#         print('5')
+#     walk_regions = new_walk_regions
+#     foot = "right" if foot == "left" else "left"
+#     for region in walk_regions:
+#         if region.contains(end_point):
+#             print("success")
+#             break
