@@ -1,0 +1,35 @@
+3
+taking step 2
+8
+taking step 3
+13
+taking step 4
+14
+taking step 5
+16
+taking step 6
+23
+taking step 7
+37
+taking step 8
+45
+taking step 9
+39
+taking step 10
+73
+taking step 11
+63
+taking step 12
+46
+taking step 13
+acquired
+graph construction took 23.313364336034283
+fast traverse in 11
+8.75396654009819e-06
+bfs in 55
+4.0004029870033264e-05
+a* in 45
+0.010749493958428502
+greedy in 24, path length: 26
+0.0018519680015742779
+Graph with 381 nodes and 380 edges

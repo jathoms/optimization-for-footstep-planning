@@ -1,0 +1,59 @@
+Gurobi Optimizer version 9.5.2 build v9.5.2rc0 (mac64[x86])
+Thread count: 4 physical cores, 8 logical processors, using up to 8 threads
+Optimize a model with 137 rows, 108 columns and 280 nonzeros
+Model fingerprint: 0xf491ffd5
+Model has 11 quadratic constraints
+Variable types: 96 continuous, 12 integer (12 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+03]
+  QMatrix range    [1e+00, 1e+00]
+  Objective range  [0e+00, 0e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e-01, 1e+03]
+  QRHS range       [1e+00, 1e+00]
+Presolve removed 135 rows and 86 columns
+Presolve time: 0.00s
+Presolved: 2 rows, 22 columns, 22 nonzeros
+Presolved model has 11 quadratic constraint(s)
+Variable types: 22 continuous, 0 integer (0 binary)
+Root relaxation presolve time: 0.00s
+Root relaxation presolved: 57 rows, 33 columns, 77 nonzeros
+Root relaxation presolved model has 11 second-order cone constraints
+Root barrier log...
+
+Ordering time: 0.00s
+
+Barrier statistics:
+ AA' NZ     : 2.210e+02
+ Factor NZ  : 3.530e+02
+ Factor Ops : 2.865e+03 (less than 1 second per iteration)
+ Threads    : 1
+
+                  Objective                Residual
+Iter       Primal          Dual         Primal    Dual     Compl     Time
+   0   0.00000000e+00  0.00000000e+00  1.28e+00 1.00e-01  1.86e-01     0s
+   1   0.00000000e+00 -1.43792325e+00  4.88e-03 1.10e-07  3.03e-02     0s
+   2   0.00000000e+00 -2.11492861e-01  7.11e-15 2.77e-10  2.40e-03     0s
+   3   0.00000000e+00 -4.40926219e-04  8.85e-12 3.07e-13  5.01e-06     0s
+   4   0.00000000e+00 -9.20200981e-07  9.64e-12 3.39e-16  1.05e-08     0s
+
+Barrier solved model in 4 iterations and 0.00 seconds (0.00 work units)
+Optimal objective 0.00000000e+00
+
+
+Root relaxation: objective 0.000000e+00, 0 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0       0.0000000    0.00000  0.00%     -    0s
+
+Explored 1 nodes (0 simplex iterations) in 0.05 seconds (0.00 work units)
+Thread count was 8 (of 8 available processors)
+
+Solution count 1: 0 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 0.000000000000e+00, best bound 0.000000000000e+00, gap 0.0000%
+12 steps taken.
+1.0  nodes traversed.

@@ -1,0 +1,53 @@
+Gurobi Optimizer version 9.5.2 build v9.5.2rc0 (mac64[x86])
+Thread count: 4 physical cores, 8 logical processors, using up to 8 threads
+Optimize a model with 4061 rows, 2581 columns and 8609 nonzeros
+Model fingerprint: 0x1f6ff88c
+Model has 28 quadratic constraints
+Variable types: 2088 continuous, 493 integer (493 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+03]
+  QMatrix range    [1e+00, 1e+00]
+  Objective range  [0e+00, 0e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e-01, 1e+03]
+  QRHS range       [3e+00, 3e+00]
+Presolve removed 3918 rows and 2258 columns
+Presolve time: 0.04s
+Presolved: 143 rows, 323 columns, 1411 nonzeros
+Presolved model has 27 quadratic constraint(s)
+Variable types: 72 continuous, 251 integer (251 binary)
+
+Root relaxation: objective 0.000000e+00, 85 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    0.00000    0   10          -    0.00000      -     -    0s
+     0     0    0.00000    0   22          -    0.00000      -     -    0s
+     0     0    0.00000    0    4          -    0.00000      -     -    0s
+     0     0    0.00000    0    6          -    0.00000      -     -    0s
+     0     0    0.00000    0    7          -    0.00000      -     -    0s
+     0     0    0.00000    0    7          -    0.00000      -     -    0s
+     0     0    0.00000    0    7          -    0.00000      -     -    0s
+     0     0    0.00000    0    7          -    0.00000      -     -    0s
+     0     2    0.00000    0    7          -    0.00000      -     -    0s
+H  496   255                       0.0000000    0.00000  0.00%  14.6    0s
+*  496   255              27       0.0000000    0.00000  0.00%  14.7    0s
+
+Cutting planes:
+  Cover: 3
+  Clique: 3
+  MIR: 3
+  StrongCG: 2
+  Flow cover: 5
+  GUB cover: 5
+
+Explored 498 nodes (7771 simplex iterations) in 0.45 seconds (0.17 work units)
+Thread count was 8 (of 8 available processors)
+
+Solution count 1: 0 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 0.000000000000e+00, best bound 0.000000000000e+00, gap 0.0000%
+29 steps taken.
+498.0  nodes traversed.

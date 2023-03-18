@@ -56,14 +56,14 @@ class VisionHull(ConvexHull):
             super().__init__(self.linearise_reachable_region(self.source))
             plot_hull(self, color="red")
 
-    def linearise_reachable_region(self, centre=[0, 0]):
+    def linearise_reachable_region(self, centre=[0, 0], foot="right"):
         # global foot
         global no_points
         global reachable_distance
         global offset
         x = []
         y = []
-        if self.foot == 'right':
+        if foot == 'right':
             initial_angle = math.pi/2
             min_x_sep = -offset
         else:
@@ -148,41 +148,34 @@ class VisionHull(ConvexHull):
 a = 0
 
 
-def linearise_reachable_region(centre=[0, 0], foot2="right"):
+def linearise_reachable_region(reachable_distance, no_points, centre=[0, 0], foot='right', offset=0.1):
     # linear approximation of region is always a subset of the actual reachable region,
     # so it will increase efficacy at higher point count, while guaranteeing reachability at any n.
-    global foot
-    global no_points
-    global reachable_distance
-    global offset
-    # global a
-    # print("started linearisation", a)
+    # print("finished linearisation", a)
+    # a += 1
+    # global foot
     x = []
     y = []
-    if foot == 'right':
-        initial_angle = math.pi/2
-        color = 'blue'
+
+    offset_angle = math.asin((offset) /
+                             math.sqrt(reachable_distance**2 + offset**2))
+
+    if foot == 'left':
+        initial_angle = math.pi/2 + offset_angle
         min_x_sep = -offset
     else:
-        initial_angle = 3*math.pi/2
-        color = 'green'
+        initial_angle = 3*math.pi/2 + offset_angle
         min_x_sep = offset
     for i in range(no_points+1):
-        x.append(min_x_sep + centre[0] + math.cos(initial_angle +
-                 math.pi*(i/no_points)) * reachable_distance)
+        x.append(centre[0] + math.cos(initial_angle +
+                                      (math.pi - 2*offset_angle)*(i/no_points)) * reachable_distance)
         y.append(centre[1] + math.sin(initial_angle +
-                 math.pi*(i/no_points))*reachable_distance)
+                                      (math.pi - 2*offset_angle)*(i/no_points))*reachable_distance)
     # add first points at the end for plot to look closed.
-    x.append(min_x_sep + centre[0] +
+    x.append(centre[0] +
              math.cos(initial_angle) * reachable_distance)
     y.append(centre[1] + math.sin(initial_angle)*reachable_distance)
 
-    # plt.plot(x, y, "-", color=color, alpha=0.4)
-    # plt.axis("scaled")
-    # plt.show()
-
-    # print("finished linearisation", a)
-    # a += 1
     return ConvexHull(np.array(list(zip(x, y))))
 
 
@@ -311,7 +304,6 @@ def graph_pathfind(environment: list[ConvexHull], start_point, end_point):
     global reachable_distance
     global offset
     steps = 0
-    checked_vertices = []
     reachable_region = linearise_reachable_region(
         start_point)
     new_walkable_regions = intersect_reachable_region(
@@ -349,11 +341,12 @@ def graph_pathfind(environment: list[ConvexHull], start_point, end_point):
                 return
 
 
-def plot_hull(hull, title="", color="black"):
+def plot_hull(hull, title="", color="black", alpha=1):
     plt.title(title)
     vertices = hull.points
     for simplex in hull.simplices:
-        plt.plot(vertices[simplex, 0], vertices[simplex, 1], 'k-', color=color)
+        plt.plot(vertices[simplex, 0], vertices[simplex, 1],
+                 'k-', color=color, alpha=alpha)
     # plt.show()
     return
 

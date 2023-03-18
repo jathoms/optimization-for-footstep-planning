@@ -3,10 +3,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.spatial import ConvexHull
 from sklearn import cluster
+from graph_construction import linearise_reachable_region
 import io
 import sys
-from graph_construction import linearise_reachable_region
-from math import pi
 
 m = 16  # number of wanted regions (default)
 n = 2  # dimension of space
@@ -14,6 +13,7 @@ steps = 1  # default number of steps in solution
 first_foot_forward = 'left'
 min_foot_separation_h = 0.1
 default_dist = 0.6
+
 
 rng = np.random.default_rng(seed=70)
 # m * 50 random points in n-D
@@ -81,6 +81,7 @@ def get_constraints(model: gp.Model,
             contact_points_vector[i] - contact_points_vector[i+1]))
         model.addConstr(dists[i] @ dists[i] <= reachable_distance**2)
         # model.addConstr(dists[i] @ dists[i] >= foot_size)
+    for i in range(steps_taken):
         for j in range(no_regions):
             for k in range(len(b[j])):
                 model.addConstr(
@@ -118,7 +119,7 @@ def get_constraints(model: gp.Model,
                 x, y = point.X[0], point.X[1]
                 # plot footstep positions and linearised version of reachable region from each step
                 if idx <= steps_taken-1:
-
+                    pass
                     plt.plot([step.X[0] for step in contact_points_vector[idx:idx+2]],
                              [step.X[1] for step in contact_points_vector[idx:idx+2]], ":", color="black")
                     # print(x, y)
@@ -129,20 +130,26 @@ def get_constraints(model: gp.Model,
                     plt.plot(x, y, marker="x", markersize=10,
                              markerfacecolor="blue", markeredgecolor="blue")
                     linearise_reachable_region(reachable_distance, 10, [
-                                               x, y], foot='right' if first_foot_forward == 'left' else 'right', offset=min_foot_separation_h)
+                                               x, y], foot=('right' if first_foot_forward == 'left' else 'right'), offset=min_foot_separation_h)
                 else:
                     plt.plot(x, y, marker="x", markersize=10,
                              markerfacecolor="green", markeredgecolor="green")
                     linearise_reachable_region(reachable_distance, 10, [
-                                               x, y], foot='left' if first_foot_forward == 'left' else 'right', offset=min_foot_separation_h)
+                                               x, y], foot=('left' if first_foot_forward == 'left' else 'right'), offset=min_foot_separation_h)
 
-            plt.plot(end[0], end[1], marker="o", markersize=10, markeredgecolor="red", markerfacecolor="red",
+            plt.plot(end[0], end[1], marker="o", markersize=6, markeredgecolor="red", markerfacecolor="red",
                      alpha=0.5)
-            plt.plot(start[0], start[1], marker="o", markersize=10, markeredgecolor="green", markerfacecolor="green",
+            plt.plot(start[0], start[1], marker="o", markersize=6, markeredgecolor="green", markerfacecolor="green",
                      alpha=0.5)
             print("Start Point:", start, "\nEnd Point:", end)
             print(
                 f"Near optimal with {steps_taken} steps (within {int(steps_taken - (steps_taken*decrease_amount))} steps)")
+            for i in range(steps_taken):
+                print(i, end="\t")
+                for j in range(no_regions):
+                    print(int(active[i, j].X), end=' ')
+                print('\n', end="")
+
         except gp.GurobiError:
             print(f"Problem is infeasible for {steps_taken} steps.")
             if steps_taken > 100:
