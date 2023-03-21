@@ -7,9 +7,14 @@ from scipy.optimize import linprog
 from graph_construction import plot_hull
 from create_environment import createSquare
 import time
-import cProfile
+from hierarchy_tree import hierarchy_pos
+import networkx as nx
+import sys
+sys.setrecursionlimit(2000)
 
 walkable_regions = []
+check_for_redundant_regions = True
+regionparentmap = {}
 
 
 class HullSection(ConvexHull):
@@ -23,9 +28,6 @@ class HullSection(ConvexHull):
 
     def get_vertices(self):
         return [self.points[v] for v in self.vertices]
-
-    def get_children_hulls(self, environment: list[ConvexHull], explored):
-        return self.vision.intersect_with_world(environment, explored)
 
     def contains(self, point: list[float],  tolerance=1e-12):
         return all(
@@ -41,22 +43,24 @@ class HullNode():
         self.children: list[HullNode] = children
         self.depth = depth
 
-    def add_child(self, child: HullSection):
+    def add_child_from_hullsection(self, child: HullSection):
         self.children.append(
             HullNode(hull=child, parent=self, children=[], depth=self.depth+1))
 
+    def add_child_node(self, node):
+        self.children.append(node)
+        node.parent = self
+
+    def get_children_hulls(self, environment: list[ConvexHull], explored):
+        return self.hull.vision.intersect_with_world(environment, explored)
+
     def add_children(self, children):
         for child in children:
-            self.add_child(child)
+            self.add_child_from_hullsection(child)
 
     def remove_child(self, child):
         if child in self.children:
             self.children.remove(child)
-
-
-a = 0
-b = 0
-c = 0
 
 
 class VisionHull(ConvexHull):
@@ -78,6 +82,7 @@ class VisionHull(ConvexHull):
         global no_points
         global reachable_distance
         global offset
+        global add_redundant_regions
         x = []
         y = []
 
@@ -86,10 +91,9 @@ class VisionHull(ConvexHull):
 
         if self.foot == 'left':
             initial_angle = math.pi/2 + offset_angle
-            min_x_sep = -offset
         else:
             initial_angle = 3*math.pi/2 + offset_angle
-            min_x_sep = offset
+
         for i in range(no_points+1):
             x.append(centre[0] + math.cos(initial_angle +
                                           (math.pi - 2*offset_angle)*(i/no_points)) * reachable_distance)
@@ -99,8 +103,6 @@ class VisionHull(ConvexHull):
         x.append(centre[0] +
                  math.cos(initial_angle) * reachable_distance)
         y.append(centre[1] + math.sin(initial_angle)*reachable_distance)
-
-        print(x[0], centre[0]+offset)
 
         return np.array(list(zip(x, y)))
 
@@ -131,39 +133,29 @@ class VisionHull(ConvexHull):
         return hull_section
 
     def intersect_with_world(self, environment: list[ConvexHull], explored: list[HullSection]) -> list[HullSection]:
-        # global a
-        # global b
-        # global c
-        a = 0
-        # b = 0
-        res = []
-        # print("call", c)
-        # c += 1
+        newfrontier = []
+        # explored_hulls = [e.hull for e in]
         for hull in environment:
             i = self.hull_intersection(hull)
             if i:
-                print('int')
-                a += 1
-                # b += 1
-                same_parent_regions = [
-                    x for x in explored+res if x.parent_hull is i.parent_hull]
-                # print(len(same_parent_regions), "hullsections in this box")
-                if not same_parent_regions:
-                    res.append(i)
-                    # a += 1
+                if not check_for_redundant_regions:
+                    newfrontier.append(i)
                     continue
-                # print([self.adds_to_region(explored_region, i)
-                #       for explored_region in same_parent_regions])
+                same_parent_regions = [
+                    x for x in explored+newfrontier if x.parent_hull is i.parent_hull]
+                if not same_parent_regions:
+                    newfrontier.append(i)
+                    continue
                 if all([self.adds_to_region(explored_region, i) for explored_region in same_parent_regions]):
-                    res.append(i)
-                # a += 1
-        # print(b, "intersections")
-        # print(a, "appends")
-
-        # intersection of convex sets is convex
-        # print("number of sections", len(res))
-        print(a)
-        return res
+                    newfrontier.append(i)
+                for explored_region in same_parent_regions:
+                    if self.adds_to_region(explored_region, i):
+                        continue
+                    else:
+                        regionparentmap.setdefault(explored_region, [])
+                        regionparentmap[explored_region].append(i)
+        # intersection of convex sets is convex, so we are chilling
+        return newfrontier
 
     def adds_to_region(self, explored_region, i):
         if i.foot_in != explored_region.foot_in:
@@ -332,7 +324,7 @@ env = np.array([[18.65, 14.8],  # 1.5 spiral?
 world = [createSquare(center, 0.3, False) for center in env]
 
 
-config = [1.8, 14, "left", 0.1]
+config = [1, 16, "left", 0.1]
 
 [reachable_distance, no_points, foot, offset] = config
 
@@ -402,6 +394,28 @@ def cleanup_nodes_change_parent(regions: list[HullNode], world):
                         # alalregions.remove(region)
 
 
+def cleanup_nodes_add_parent(regions: list[HullNode], world):
+    # print(len(regions), "b")
+    global regionparentmap
+    for hull in world:
+        same_parent_regions = [
+            x for x in regions if x.hull.parent_hull is hull]
+        for region in same_parent_regions:
+            for region2 in same_parent_regions:
+                distinction_check_volume = ConvexHull(
+                    np.vstack([region2.hull.points, region.hull.points]))
+                larger_region = region2 if region2.hull.volume >= region.hull.volume else region
+                if distinction_check_volume.volume == larger_region.hull.volume and not (region is region2):
+                    if larger_region is region2:
+                        if region in regions:
+                            larger_region.parent.children.append(region)
+                            regionparentmap.setdefault(region, [])
+                            regionparentmap[region].append(
+                                larger_region.parent)
+                            regions.remove(region)
+                        # alalregions.remove(region)
+
+
 def is_explored(region, explored):
     for ex in explored:
         if region.hull.parent_hull == ex.parent_hull:
@@ -415,7 +429,8 @@ def is_explored(region, explored):
     return False
 
 
-def search(world, start, end, config):  # search from start to end
+# search from start to end, or end to start depending on reverse
+def search(world, start, end, config, reverse=False):
 
     step = 2  # first step is counted as initial position of non-starting foot, first region generated is technically step 2
     global foot
@@ -423,38 +438,43 @@ def search(world, start, end, config):  # search from start to end
     explored_walkable_regions_left = []
     initial_vision = VisionHull(start, foot)
     initial_sections = initial_vision.intersect_with_world(world, [])
-    root = HullNode(hull=None, parent=None, children=[],
-                    depth=0, starthull=world[0])
+    if reverse:
+        root = HullNode(hull=None, parent=None, children=[],
+                        depth=0, starthull=world[-1])
+    else:
+        root = HullNode(hull=None, parent=None, children=[],
+                        depth=0, starthull=world[0])
     for initial_section in initial_sections:
-        root.add_child(initial_section)
+        root.add_child_from_hullsection(initial_section)
     current = root.children
 
     while True:
 
-        # print(len(current))
+        print(f"spawned {len(current)} children")
 
-        explored_walkable_regions_left = cleanup(
-            explored_walkable_regions_left, world)
-        explored_walkable_regions_right = cleanup(
-            explored_walkable_regions_right, world)
-
-        current = cleanup_nodes(current, world)
-        cleanup_nodes_change_parent(current, world)
-        if step >= 26:
-            for region in world:
-                plot_hull(region)
-            for region in explored_walkable_regions_left:
-                plot_hull(region, color="blue")
-            for region in explored_walkable_regions_right:
-                plot_hull(region, color="green")
-            for region in current:
-                plot_hull(region.hull, color="pink")
-            plt.plot(start[0], start[1], "o", color='brown')
-            plt.plot(end[0], end[1], "o", color="red")
-            # for region in current:
-            #     plot_hull(region.hull.vision, color='cyan', alpha=0.5)
-            plt.axis("scaled")
-            plt.show()
+        # explored_walkable_regions_left = cleanup(
+        #     explored_walkable_regions_left, world)
+        # explored_walkable_regions_right = cleanup(
+        #     explored_walkable_regions_right, world)
+        if check_for_redundant_regions:
+            # current = cleanup_nodes(current, world)
+            cleanup_nodes_add_parent(current, world)
+        # for region in world:
+        #     plot_hull(region)
+        # for region in explored_walkable_regions_left:
+        #     plot_hull(region, color="blue")
+        # for region in explored_walkable_regions_right:
+        #     plot_hull(region, color="green")
+        # for region in current:
+        #     plot_hull(region.hull, color="pink")
+        # plt.plot(start[0], start[1], "o", color='brown')
+        # plt.plot(end[0], end[1], "o", color="red")
+        # for region in current:
+        #     plot_hull(region.hull.vision, color='cyan', alpha=0.5)
+        # plt.axis("scaled")
+        # plt.show()
+        # draw_graph(root)
+        # plt.show()
         print("taking step", step)
         for region in current:
             if region.hull.contains(end):
@@ -469,7 +489,7 @@ def search(world, start, end, config):  # search from start to end
             #     continue
 
             # t1 = time.perf_counter()
-            region_vision = region.hull.get_children_hulls(
+            region_vision = region.get_children_hulls(
                 world, explored_walkable_regions_left if region.hull.foot_in == "right" else explored_walkable_regions_right)
 
             if region.hull.foot_in == "right":
@@ -485,6 +505,40 @@ def search(world, start, end, config):  # search from start to end
             return None
         current = new
         step += 1
+
+
+def draw_graph(root: HullNode, end=None):
+
+    gr = nx.Graph()
+
+    gr.add_node(root)
+
+    def populate(root):
+        if root is None:
+            return
+        for child in root.children:
+            gr.add_node(child)
+            gr.add_edge(root, child)
+            populate(child)
+
+    populate(root)
+
+    print(gr)
+    if nx.is_tree(gr):
+        pos = hierarchy_pos(gr, root)
+        nx.draw(gr, pos=pos, node_size=10,
+                node_color=["#00B2B2" if node is end else '#B200B2' for node in gr])
+    else:
+        nx.draw(gr, node_size=10,
+                node_color=["#00B2B2" if node is end else '#B200B2' for node in gr])
+    # colours = {root: "#FF0000", end: "000000"}
+
+    # nx.draw(gr, node_color=[
+    #         "#FF0000" if node.depth == 0 or node.depth == steps else "#000000" for node in gr], node_size=15)
+
+    # nx.draw(gr, node_color=[
+    #     "#FF0000" if node.depth == 0 or node.depth == steps + 1 else "#000000" for node in gr], node_size=15)
+    plt.show()
 
 
 start = env[0]

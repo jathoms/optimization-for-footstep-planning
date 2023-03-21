@@ -2,6 +2,8 @@ from OO_graph_objects import *
 import matplotlib.patches as mpatches
 import graph_construction as g
 import numpy as np
+import networkx as nx
+from hierarchy_tree import hierarchy_pos
 
 
 def plot_hull(hull, title="", color="black", alpha=1):
@@ -194,30 +196,33 @@ def second_triangle_broken_todo():
     plt.show()
 
 
-rng = np.random.default_rng()
-initial_points = np.array([[0, 0], [0, 1], [1.5, 0.5], [2, 0], [1, 2], [3, 3]])
+def gen_regions():
 
+    rng = np.random.default_rng()
+    initial_points = np.array(
+        [[0, 0], [0, 1], [1.5, 0.5], [2, 0], [1, 2], [3, 3]])
 
-for _ in range(20):
-    initial_points = 5 * rng.random((20, 2))
+    for _ in range(20):
+        initial_points = 5 * rng.random((20, 2))
 
-    c = ConvexHull(initial_points)
-    centroid = np.mean(initial_points[c.vertices, :], axis=0)
-    print(initial_points[c.vertices, :])
-    print('mean:', np.mean(initial_points[c.vertices, :], axis=0))
+        c = ConvexHull(initial_points)
+        centroid = np.mean(initial_points[c.vertices, :], axis=0)
+        print(initial_points[c.vertices, :])
+        print('mean:', np.mean(initial_points[c.vertices, :], axis=0))
 
-    plt.plot(centroid[0], centroid[1], "x", color='red')
+        plt.plot(centroid[0], centroid[1], "x", color='red')
 
-    plot_hull(c, color="brown")
-    fp = []
-    for point in initial_points:
-        hull = g.linearise_reachable_region(1, 6, point)
-        fp.extend(hull.points)
-        # plot_hull(hull, color="blue", alpha=0.5)
+        plot_hull(c, color="brown")
+        fp = []
+        for point in initial_points:
+            hull = g.linearise_reachable_region(1, 6, point)
+            fp.extend(hull.points)
+            # plot_hull(hull, color="blue", alpha=0.5)
 
-    fh = ConvexHull(fp)
-    plot_hull(fh, color="blue")
+        fh = ConvexHull(fp)
+        plot_hull(fh, color="blue")
 
-    plt.grid(True)
-    plt.axis('equal')
-    plt.show()
+        plt.grid(True)
+        plt.axis('equal')
+        plt.show()
+

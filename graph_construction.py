@@ -346,7 +346,7 @@ def plot_hull(hull, title="", color="black", alpha=1):
     vertices = hull.points
     for simplex in hull.simplices:
         plt.plot(vertices[simplex, 0], vertices[simplex, 1],
-                 'k-', color=color, alpha=alpha)
+                 '-', color=color, alpha=alpha)
     # plt.show()
     return
 

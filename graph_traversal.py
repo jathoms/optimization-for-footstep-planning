@@ -1,34 +1,233 @@
 from OO_graph_objects import *
-from scipy.spatial import ConvexHull
 import heapq
 from collections import deque
 from time import perf_counter
-import timeit
 import create_environment as create
-import networkx as nx
-import pydot
-from networkx.drawing.nx_pydot import graphviz_layout
-from hierarchy_tree import hierarchy_pos
 import biped_mip_traverse_given_regions as mip
 import gurobipy as gp
 
-env = np.array([[14.25, 14.6],  # 1.8 spiral?
-                [16.15, 14.95],
-                [18.45, 14.95],
-                [20.19, 15.41],
-                [20.25, 14],
-                [21.55, 11.9],
-                [21.35, 10.05],
-                [21.81, 13.37],
-                [20.15, 8.9],
-                [18.5, 8.3],
-                [17.05, 8.35],
-                [17.3, 15.8],
-                [15.95, 8.85],
-                [14.85, 10.1],
-                [14.7, 11.65],
-                [17.0, 11.65],
-                [18.7, 11.65], ])
+reverse_search = True
+
+# env = np.array([[14.25, 14.6],  # 1.8 spiral?
+#                 [16.15, 14.95],
+#                 [18.45, 14.95],
+#                 [20.19, 15.41],
+#                 [20.25, 14],
+#                 [21.55, 11.9],
+#                 [21.35, 10.05],
+#                 [21.81, 13.37],
+#                 [20.15, 8.9],
+#                 [18.5, 8.3],
+#                 [17.05, 8.35],
+#                 [17.3, 15.8],
+#                 [15.95, 8.85],
+#                 [14.85, 10.1],
+#                 [14.7, 11.65],
+#                 [17.0, 11.65],
+#                 [18.7, 11.65], ])
+
+# env = np.array([[17.325, 12.7],  # fu
+#                 [2.325, 1.55],
+#                 [38.925, 5.7],
+#                 [16.675, 11.75],
+#                 [16.075, 12.3],
+#                 [16.175, 13.3],
+#                 [17.025, 13.85],
+#                 [17.925, 13.7],
+#                 [18.675, 12.85],
+#                 [18.425, 12.1],
+#                 [17.825, 11.5],
+#                 [2.275, 2.5],
+#                 [1.275, 2.3],
+#                 [1.275, 1.4],
+#                 [1.875, 0.8],
+#                 [2.725, 0.8],
+#                 [3.175, 1.45],
+#                 [3.025, 2.45],
+#                 [38.375, 6.45],
+#                 [39.275, 6.6],
+#                 [40.025, 6.15],
+#                 [40.025, 5.5],
+#                 [39.475, 5],
+#                 [38.175, 5.1],
+#                 [38.075, 5.9],
+#                 [16.825, 8.95],
+#                 [16.825, 8.35],
+#                 [16.825, 7.8],
+#                 [16.775, 7.35],
+#                 [16.875, 6.95],
+#                 [17.275, 9.1],
+#                 [17.625, 9.05],
+#                 [17.875, 9.05],
+#                 [17.225, 8.1],
+#                 [17.575, 8.05],
+#                 [17.875, 8.05],
+#                 [19.225, 8.85],
+#                 [19.225, 8.5],
+#                 [19.175, 7.9],
+#                 [19.375, 7.15],
+#                 [19.925, 7],
+#                 [20.125, 7.2],
+#                 [20.275, 7.75],
+#                 [20.275, 8.3],
+#                 [20.275, 8.8],
+#                 [22.225, 8.95],
+#                 [21.925, 8.9],
+#                 [21.825, 8.9],
+#                 [21.625, 8.75],
+#                 [21.375, 8.25],
+#                 [21.375, 8],
+#                 [21.375, 7.65],
+#                 [21.525, 7.15],
+#                 [21.775, 7],
+#                 [22.175, 7],
+#                 [22.525, 7.1],
+#                 [23.775, 8.95],
+#                 [23.775, 8.45],
+#                 [23.775, 8.15],
+#                 [23.725, 7.6],
+#                 [23.875, 7.35],
+#                 [23.875, 6.9],
+#                 [24.775, 8.75],
+#                 [24.525, 8.45],
+#                 [24.325, 8],
+#                 [24.275, 7.8],
+#                 [24.675, 7.55],
+#                 [25.125, 7.15],
+#                 [25.225, 6.85],
+#                 [17.375, 5],
+#                 [17.675, 4.65],
+#                 [17.775, 4.35],
+#                 [18.325, 5],
+#                 [18.175, 4.55],
+#                 [17.775, 4.05],
+#                 [17.475, 3.65],
+#                 [17.325, 3.2],
+#                 [20.025, 4.85],
+#                 [19.675, 4.7],
+#                 [19.375, 4.35],
+#                 [19.375, 3.9],
+#                 [19.575, 3.35],
+#                 [20.225, 3.05],
+#                 [20.775, 3.35],
+#                 [20.825, 4.1],
+#                 [20.775, 4.55],
+#                 [20.425, 4.75],
+#                 [22.025, 4.85],
+#                 [22.025, 4.65],
+#                 [22.025, 4.2],
+#                 [22.025, 3.85],
+#                 [22.025, 3.55],
+#                 [22.125, 3.2],
+#                 [22.425, 3.2],
+#                 [22.675, 3.2],
+#                 [22.925, 3.4],
+#                 [22.925, 3.95],
+#                 [22.925, 4.4],
+#                 [22.975, 4.9],
+#                 [25.525, 4.95],
+#                 [26.825, 5.05],
+#                 [24.975, 4.05],
+#                 [25.025, 3.8],
+#                 [25.375, 3.3],
+#                 [25.775, 2.9],
+#                 [26.275, 2.8],
+#                 [26.775, 2.75],
+#                 [27.375, 2.85],
+#                 [27.575, 3.35],
+#                 [27.825, 4],
+#                 [1.775, 2.05],
+#                 [2.775, 2],
+#                 [2.625, 1.25],
+#                 [1.675, 1.3],
+#                 [17.075, 13.35],
+#                 [17.725, 13],
+#                 [17.875, 12.45],
+#                 [17.275, 12.2],
+#                 [16.775, 12.6],
+#                 [16.825, 13.1],
+#                 [39.525, 6.1],
+#                 [38.675, 5.2],
+#                 [38.925, 6.25],
+#                 [39.575, 5.5],
+#                 [7.575, 8.55],
+#                 [7.625, 9.15],
+#                 [6.925, 8.95],
+#                 [6.925, 8.55],
+#                 [7.175, 8],
+#                 [7.875, 8],
+#                 [8.225, 8.4],
+#                 [8.275, 9],
+#                 [8.175, 9.75],
+#                 [7.275, 9.75],
+#                 [6.575, 9.45],
+#                 [6.425, 8.9],
+#                 [6.425, 8.25],
+#                 [6.675, 7.75],
+#                 [7.325, 7.55],
+#                 [8.375, 7.55],
+#                 [8.675, 8.25],
+#                 [7.875, 7.55],
+#                 [8.775, 8.85],
+#                 [8.775, 9.55],
+#                 [33.125, 14.5],
+#                 [32.825, 15.05],
+#                 [32.525, 14.6],
+#                 [32.625, 14.15],
+#                 [33.075, 14.05],
+#                 [33.775, 14.1],
+#                 [33.775, 14.6],
+#                 [33.425, 15.25],
+#                 [34.175, 15.3],
+#                 [34.375, 14.85],
+#                 [34.375, 14.35],
+#                 [34.125, 13.8],
+#                 [33.225, 13.7],
+#                 [32.425, 13.95],
+#                 [31.975, 14.8],
+#                 [33.025, 15.7],
+#                 [32.675, 13.5],
+#                 [32.525, 15.5],
+#                 [33.775, 13.55],
+#                 [2.975, 3.05],
+#                 [4.025, 4.05],
+#                 [4.875, 5.15],
+#                 [5.925, 5.95],
+#                 [7.075, 7.1],
+#                 [9.025, 10.95],
+#                 [10.025, 10.95],
+#                 [10.975, 11],
+#                 [11.975, 11],
+#                 [12.875, 10.9],
+#                 [13.825, 10.9],
+#                 [14.775, 10.85],
+#                 [15.875, 10.85],
+#                 [16.925, 10.9],
+#                 [18.925, 14.1],
+#                 [19.925, 14],
+#                 [20.875, 13.2],
+#                 [21.875, 13.95],
+#                 [22.825, 15],
+#                 [23.975, 14.15],
+#                 [24.725, 13.25],
+#                 [25.825, 14],
+#                 [26.775, 15.05],
+#                 [28.025, 14.05],
+#                 [28.825, 13.15],
+#                 [29.875, 14.1],
+#                 [30.675, 15],
+#                 [31.725, 14.1],
+#                 [35.075, 14.95],
+#                 [35.825, 14.05],
+#                 [35.925, 13],
+#                 [34.975, 11.9],
+#                 [34.075, 11],
+#                 [34.025, 10.05],
+#                 [34.975, 9.2],
+#                 [36.175, 8.25],
+#                 [36.925, 7.25],
+#                 [36.925, 6.3],
+#                 [37.575, 5.6]])
 
 # env = np.array([[6.75, 8.85],  # fig4, 3
 #                 [17.7, 8.2],
@@ -173,60 +372,60 @@ env = np.array([[14.25, 14.6],  # 1.8 spiral?
 #                 [20.4, 12.05],
 #                 [19.5, 12.5]])
 
-# env = np.array([[18.8, 1.7],  # 0.6
-#                 [18.8, 3.4],
-#                 [18.85, 5.55],
-#                 [18.65, 8.15],
-#                 [19.55, 3.25],
-#                 [20.4, 4],
-#                 [21.15, 4.65],
-#                 [21.65, 5.45],
-#                 [21.8, 6.3],
-#                 [21.8, 7.65],
-#                 [21.8, 8.55],
-#                 [19.75, 6.05],
-#                 [19.9, 6.5],
-#                 [20.1, 7.25],
-#                 [20.2, 8],
-#                 [18.2, 5.45],
-#                 [17.85, 5.85],
-#                 [17.85, 6.4],
-#                 [17.5, 7.65],
-#                 [17.6, 3.7],
-#                 [16.2, 4.25],
-#                 [16.1, 6.1],
-#                 [16, 7.15],
-#                 [16.05, 5.25],
-#                 [15.95, 7.85],
-#                 [15.55, 8.9],
-#                 [16.2, 10.1],
-#                 [16.65, 11.2],
-#                 [21.95, 9.35],
-#                 [22.25, 9.75],
-#                 [23.2, 10.7],
-#                 [24.2, 11.45],
-#                 [19.3, 9.25],
-#                 [19.45, 10.5],
-#                 [18.6, 4.4],
-#                 [18.75, 2.65],
-#                 [24.1, 12.4],
-#                 [23.2, 13.3],
-#                 [22.55, 13.7],
-#                 [17.05, 11.8],
-#                 [17.65, 12],
-#                 [18.2, 12.05],
-#                 [19.05, 12.7],
-#                 [19.95, 13.3],
-#                 [19.85, 11.5],
-#                 [20.2, 12.35],
-#                 [20.95, 8],
-#                 [21.15, 6.25],
-#                 [20.95, 7],
-#                 [21.85, 10.55],
-#                 [21.9, 11.3],
-#                 [22.05, 12.2],
-#                 [20.15, 9.1],
-#                 [22.8, 14.65]])
+env = np.array([[18.8, 1.7],  # 0.6
+                [18.8, 3.4],
+                [18.85, 5.55],
+                [18.65, 8.15],
+                [19.55, 3.25],
+                [20.4, 4],
+                [21.15, 4.65],
+                [21.65, 5.45],
+                [21.8, 6.3],
+                [21.8, 7.65],
+                [21.8, 8.55],
+                [19.75, 6.05],
+                [19.9, 6.5],
+                [20.1, 7.25],
+                [20.2, 8],
+                [18.2, 5.45],
+                [17.85, 5.85],
+                [17.85, 6.4],
+                [17.5, 7.65],
+                [17.6, 3.7],
+                [16.2, 4.25],
+                [16.1, 6.1],
+                [16, 7.15],
+                [16.05, 5.25],
+                [15.95, 7.85],
+                [15.55, 8.9],
+                [16.2, 10.1],
+                [16.65, 11.2],
+                [21.95, 9.35],
+                [22.25, 9.75],
+                [23.2, 10.7],
+                [24.2, 11.45],
+                [19.3, 9.25],
+                [19.45, 10.5],
+                [18.6, 4.4],
+                [18.75, 2.65],
+                [24.1, 12.4],
+                [23.2, 13.3],
+                [22.55, 13.7],
+                [17.05, 11.8],
+                [17.65, 12],
+                [18.2, 12.05],
+                [19.05, 12.7],
+                [19.95, 13.3],
+                [19.85, 11.5],
+                [20.2, 12.35],
+                [20.95, 8],
+                [21.15, 6.25],
+                [20.95, 7],
+                [21.85, 10.55],
+                [21.9, 11.3],
+                [22.05, 12.2],
+                [20.15, 9.1],
+                [22.8, 14.65]])
 
 
 def fast_traverse_no_change(start: HullNode, end: HullNode):
@@ -244,11 +443,11 @@ def fast_traverse_no_change(start: HullNode, end: HullNode):
 def fast_traverse_no_change_backwards(start: HullNode, end: HullNode):
     nodes_traversed = 0
     path = deque([])
-    while end is not start:
+    while start is not end:
         path.append(end)
         end = end.parent
         nodes_traversed += 1
-    path.append(end)
+    path.append(start)
     print(f'fast traverse in {nodes_traversed}')
     return path
 
@@ -350,23 +549,30 @@ t1 = perf_counter()
 
 startpos, endpos = env[0], env[-1]
 
-root, end = search(world, startpos, endpos, [])
+setattr(HullNode, "__lt__", lambda self, other: get_distance(
+    self, endpos) + self.depth < get_distance(other, endpos) + other.depth)
+
+if reverse_search:
+
+    root, end = search(world, endpos, startpos, [], reverse=reverse_search)
+
+else:
+    root, end = search(world, startpos, endpos, [], reverse=reverse_search)
 
 print(f"graph construction took {perf_counter() - t1}")
 
 i = 0
-regiondict = {}
+region_id_dict = {}
 for region in world:
-    regiondict[region] = i
+    region_id_dict[region] = i
     i += 1
 
 
-setattr(HullNode, "__lt__", lambda self, other: get_distance(
-    self, endpos) + self.depth < get_distance(other, endpos) + other.depth)
-
-
 # t1 = perf_counter()
-# steporder = fast_traverse_no_change(root, end)
+# if reverse_search:
+#     steporder = fast_traverse_no_change_backwards(root, end)
+# else:
+#     steporder = fast_traverse_no_change(root, end)
 # print(perf_counter() - t1)
 
 # t1 = perf_counter()
@@ -382,50 +588,20 @@ setattr(HullNode, "__lt__", lambda self, other: get_distance(
 # print(perf_counter() - t1)
 
 
-def draw_graph():
-
-    gr = nx.Graph()
-
-    gr.add_node(root)
-
-    def populate(root):
-        if root is None:
-            return
-        for child in root.children:
-            gr.add_node(child)
-            gr.add_edge(root, child)
-            populate(child)
-
-    populate(root)
-
-    print(gr)
-
-    pos = hierarchy_pos(gr, root)
-    nx.draw(gr, pos=pos, node_size=10,
-            node_color=["#00B2B2" if node is end else '#B200B2' for node in gr])
-
-    # colours = {root: "#FF0000", end: "000000"}
-
-    # nx.draw(gr, node_color=[
-    #         "#FF0000" if node.depth == 0 or node.depth == steps else "#000000" for node in gr], node_size=15)
-
-    # nx.draw(gr, node_color=[
-    #     "#FF0000" if node.depth == 0 or node.depth == steps + 1 else "#000000" for node in gr], node_size=15)
-    plt.show()
-
-
 def run_mip_with_graph(root, end):
 
     model = gp.Model()
 
-    t1 = perf_counter()
-
-    steporder = fast_traverse_no_change_backwards(root, end)
+    if reverse_search:
+        steporder = fast_traverse_no_change_backwards(root, end)
+    else:
+        steporder = fast_traverse_no_change(root, end)
     steps = len(steporder)
-    contact_points = mip.get_footstep_positions(
-        model, world, startpos, endpos, offset, reachable_distance, steporder, regiondict, "hopefully.txt")
 
-    print(perf_counter() - t1, " to get footstep positions")
+    # plot_path(steporder)
+
+    contact_points = mip.get_footstep_positions(
+        model, world, startpos, endpos, offset, reachable_distance, steporder, region_id_dict, "hopefully.txt")
 
     for region in world:
         plot_hull(region)
@@ -447,29 +623,18 @@ def run_mip_with_graph(root, end):
                  alpha=0.5)
         plt.plot(startpos[0], startpos[1], marker="o", markersize=6, markeredgecolor="green", markerfacecolor="green",
                  alpha=0.5)
+    plt.axis('scaled')
     plt.show()
 
 
-# run_mip_with_graph(root, end)
+def plot_path(steporder):
+    for step in steporder:
+        for reg in world:
+            plot_hull(reg)
+        plot_hull(step.hull.parent_hull, color='blue')
+        plt.axis('scaled')
+        plt.show()
 
-for r in world:
-    plot_hull(r)
 
-p = np.array([[16.8, 11.95], [16.7, 11.95], [16.7, 11.35], [16.8, 11.35]])
-
-c = ConvexHull(p)
-
-s = HullSection(c, p, 'right')
-
-v = VisionHull(source=s, foot='left')
-
-# plot_hull(v, color='green')
-
-i = v.intersect_with_world(world, [])
-
-print(i)
-
-for ii in i:
-    plot_hull(ii, color='pink')
-
-plt.show()
+# draw_graph(root, end)
+run_mip_with_graph(root, end)

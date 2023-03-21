@@ -52,8 +52,8 @@ no_steps = {}
 step_dist = {}
 
 
-no_steps["Fig_1"] = 46
-step_dist["Fig_1"] = 0.6
+no_steps["Fig_1"] = 19
+step_dist["Fig_1"] = 1
 test_cases["Fig_1"] = np.array([[18.8, 1.7],  # 0.6
                                 [18.8, 3.4],
                                 [18.85, 5.55],
@@ -282,7 +282,7 @@ test_cases["Fig_5"] = np.array([[15.775, 0.95],
 no_steps["Fig_6"] = 1
 step_dist["Fig_6"] = 1
 
-env = "Fig_3"
+env = "Fig_1"
 
 
 if env == "Fig_6":

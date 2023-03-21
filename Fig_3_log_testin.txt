@@ -12,7 +12,7 @@ Coefficient statistics:
   RHS range        [1e-01, 1e+03]
   QRHS range       [3e+00, 3e+00]
 Presolve removed 3918 rows and 2258 columns
-Presolve time: 0.04s
+Presolve time: 0.05s
 Presolved: 143 rows, 323 columns, 1411 nonzeros
 Presolved model has 27 quadratic constraint(s)
 Variable types: 72 continuous, 251 integer (251 binary)
@@ -42,7 +42,7 @@ Cutting planes:
   Flow cover: 5
   GUB cover: 5
 
-Explored 498 nodes (7771 simplex iterations) in 0.45 seconds (0.17 work units)
+Explored 498 nodes (7771 simplex iterations) in 0.92 seconds (0.17 work units)
 Thread count was 8 (of 8 available processors)
 
 Solution count 1: 0 
