@@ -12,7 +12,7 @@ Coefficient statistics:
   RHS range        [1e-01, 1e+03]
   QRHS range       [1e+00, 1e+00]
 Presolve removed 8192 rows and 5072 columns
-Presolve time: 0.02s
+Presolve time: 0.03s
 Presolved: 93 rows, 134 columns, 520 nonzeros
 Presolved model has 18 quadratic constraint(s)
 Variable types: 46 continuous, 88 integer (88 binary)

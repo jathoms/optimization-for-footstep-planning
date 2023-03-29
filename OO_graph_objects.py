@@ -10,7 +10,6 @@ import time
 from hierarchy_tree import hierarchy_pos
 import networkx as nx
 import sys
-sys.setrecursionlimit(2000)
 
 walkable_regions = []
 check_for_redundant_regions = True
@@ -452,13 +451,13 @@ def search(world, start, end, config, reverse=False):
 
         print(f"spawned {len(current)} children")
 
-        # explored_walkable_regions_left = cleanup(
-        #     explored_walkable_regions_left, world)
-        # explored_walkable_regions_right = cleanup(
-        #     explored_walkable_regions_right, world)
+        explored_walkable_regions_left = cleanup(
+            explored_walkable_regions_left, world)
+        explored_walkable_regions_right = cleanup(
+            explored_walkable_regions_right, world)
         if check_for_redundant_regions:
             # current = cleanup_nodes(current, world)
-            cleanup_nodes_add_parent(current, world)
+            cleanup_nodes_change_parent(current, world)
         # for region in world:
         #     plot_hull(region)
         # for region in explored_walkable_regions_left:
