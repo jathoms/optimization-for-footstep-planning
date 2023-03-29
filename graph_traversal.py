@@ -428,10 +428,10 @@ env = np.array([[18.8, 1.7],  # 0.6
                 [22.8, 14.65]])
 
 
-def fast_traverse_no_change(start: HullNode, end: HullNode):
+def fast_traverse_no_change(root: HullNode, end: HullNode):
     nodes_traversed = 0
     path = deque([])
-    while end is not start:
+    while end is not root:
         path.appendleft(end)
         end = end.parent
         nodes_traversed += 1
@@ -440,14 +440,26 @@ def fast_traverse_no_change(start: HullNode, end: HullNode):
     return path
 
 
-def fast_traverse_no_change_backwards(start: HullNode, end: HullNode):
+def fast_traverse_no_change_backwards(root: HullNode, end: HullNode):
     nodes_traversed = 0
     path = deque([])
-    while start is not end:
+    while end is not root:
         path.append(end)
         end = end.parent
         nodes_traversed += 1
-    path.append(start)
+    path.append(root)
+    print(f'fast traverse in {nodes_traversed}')
+    return path
+
+
+def fast_traverse_from_node_to_root(root: HullNode, node: HullNode):
+    nodes_traversed = 0
+    path = deque([])
+    while node is not root:
+        path.append(node)
+        node = node.parent
+        nodes_traversed += 1
+    path.append(root)
     print(f'fast traverse in {nodes_traversed}')
     return path
 
@@ -552,6 +564,7 @@ startpos, endpos = env[0], env[-1]
 setattr(HullNode, "__lt__", lambda self, other: get_distance(
     self, endpos) + self.depth < get_distance(other, endpos) + other.depth)
 
+
 if reverse_search:
 
     root, end = search(world, endpos, startpos, [], reverse=reverse_search)
@@ -588,7 +601,7 @@ for region in world:
 # print(perf_counter() - t1)
 
 
-def run_mip_with_graph(root, end):
+def run_mip_with_graph(root, end, foot=foot):
 
     model = gp.Model()
 
@@ -600,8 +613,11 @@ def run_mip_with_graph(root, end):
 
     # plot_path(steporder)
 
+    start_foot = foot if (not reverse_search or steps % 2 == 1) else (
+        "left" if foot == "right" else "right")
+
     contact_points = mip.get_footstep_positions(
-        model, world, startpos, endpos, offset, reachable_distance, steporder, region_id_dict, "hopefully.txt")
+        model, world, startpos, endpos, offset, reachable_distance, steporder, region_id_dict, start_foot, "hopefully.txt")
 
     for region in world:
         plot_hull(region)
@@ -625,6 +641,42 @@ def run_mip_with_graph(root, end):
                  alpha=0.5)
     plt.axis('scaled')
     plt.show()
+    return model
+
+
+def replan_mip_with_graph(model: gp.Model, node, root, foot, new_startpos, endpos):
+
+    steporder = fast_traverse_no_change_backwards(root, node)
+    steps = len(steporder)
+
+    model = gp.Model()
+
+    # contact_points = [(point.X[0], point.X[1]) for point in contacts]
+
+    contact_points = mip.get_footstep_positions(
+        model, world, new_startpos, endpos, offset, reachable_distance, steporder, region_id_dict, foot, "hopefully_replanneds.txt")
+
+    for region in world:
+        plot_hull(region)
+
+    for idx, point in enumerate(contact_points):
+        x, y = point
+        if idx <= steps-1:  # plot lines between steps
+            plt.plot([step[0] for step in contact_points[idx:idx+2]],
+                     [step[1] for step in contact_points[idx:idx+2]], ":", color="black")
+        if idx % 2 == 0:  # plot f foot
+            plt.plot(x, y, marker="x", markersize=10,
+                     markerfacecolor="blue", markeredgecolor="blue")
+        else:  # plot f' foot
+            plt.plot(x, y, marker="x", markersize=10,
+                     markerfacecolor="green", markeredgecolor="green")
+            # plot start and end points
+        plt.plot(endpos[0], endpos[1], marker="o", markersize=6, markeredgecolor="red", markerfacecolor="red",
+                 alpha=0.5)
+        plt.plot(new_startpos[0], new_startpos[1], marker="o", markersize=6, markeredgecolor="green", markerfacecolor="green",
+                 alpha=0.5)
+    plt.axis('scaled')
+    plt.show()
 
 
 def plot_path(steporder):
@@ -636,5 +688,69 @@ def plot_path(steporder):
         plt.show()
 
 
-# draw_graph(root, end)
-run_mip_with_graph(root, end)
+def build_graph(root):
+
+    gr = nx.Graph()
+    gr.add_node(root)
+
+    def populate(root):
+        if root is None:
+            return
+        for child in root.children:
+            gr.add_node(child)
+            gr.add_edge(root, child, color="#FF0000")
+            populate(child)
+
+    populate(root)
+    return gr
+
+
+def find_node(pos, foot, gr: nx.Graph) -> HullNode:
+
+    res = []
+    for node in gr:
+        if node.hull.contains(pos):
+            res.append(node)
+    print('nodes in: ', res)
+    if not res:
+        print('no directly suitable node found, exiting...')
+        raise KeyError
+    correct_foot = [node for node in res if node.hull.foot_in != foot]
+    optimal_region = min([node for node in correct_foot],
+                         key=lambda x: x.depth)
+    for region in world:
+        plot_hull(region)
+    plt.plot(pos[0], pos[1], "o", color="green")
+    plot_hull(optimal_region.hull, color='green')
+    plt.plot(pos[0], pos[1], "o", color="green")
+    plt.axis('scaled')
+    plt.show()
+    return optimal_region
+
+
+def replan(model, new_pos, foot, end_node, graph):
+    new_node = find_node(new_pos, foot, graph)
+    replan_mip_with_graph(model, new_node, end_node, foot, new_pos, endpos)
+
+
+model = run_mip_with_graph(root, end)
+
+
+gr = build_graph(root)
+
+for i in range(1, 100):
+    try:
+        new_idx = (i * 378467) % (len(env)-2)
+        new_pos = env[new_idx]
+        # startpointconstr_0, startpointconstr_1 = model.getConstrByName(
+        #     "startpointconstr[0]"), model.getConstrByName("startpointconstr[1]")
+
+        # startpointconstr_0.setAttr("RHS", new_pos[0])
+        # startpointconstr_1.setAttr("RHS", new_pos[1])
+
+        next_step = "right" if (i * 10039) % 11 >= 6 else "left"
+        # print(new_idx, new_pos, endpos, next_step)
+
+        replan(model, new_pos, next_step, root, gr)
+    except KeyError:
+        continue

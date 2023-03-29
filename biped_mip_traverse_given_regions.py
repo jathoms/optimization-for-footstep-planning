@@ -4,8 +4,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.spatial import ConvexHull
 
-
-first_foot_forward = 'left'
 n = 2  # dimension
 M = 1000  # big number
 
@@ -34,6 +32,7 @@ def get_footstep_positions(model: gp.Model,
                            reachable_distance,
                            steporder,
                            regiondict,
+                           startfoot,
                            logfile="log.txt"):
 
     no_regions = len(all_hulls)
@@ -48,7 +47,7 @@ def get_footstep_positions(model: gp.Model,
     b = all_rhs
 
     contact_points_vector: gp.MVar = model.addMVar((steps_taken, n), lb=-
-                                                   gp.GRB.INFINITY, ub=gp.GRB.INFINITY)
+                                                   gp.GRB.INFINITY, ub=gp.GRB.INFINITY, name="contacts")
     dists: gp.MVar = model.addMVar(
         (steps_taken, n), ub=gp.GRB.INFINITY, lb=-gp.GRB.INFINITY)
 
@@ -59,11 +58,11 @@ def get_footstep_positions(model: gp.Model,
                                         gp.GRB.INFINITY, ub=gp.GRB.INFINITY))
     # model.addConstr(active == active_matrix)
 
-    model.addConstr(contact_points_vector[-1] == end)
-    model.addConstr(contact_points_vector[0] == start)
+    model.addConstr(contact_points_vector[-1] == end, name="startpointconstr")
+    model.addConstr(contact_points_vector[0] == start, name="endpointconstr")
 
     # bipedality constraint.
-    if first_foot_forward == 'right':
+    if startfoot == 'right':
         model.addConstrs(contact_points_vector[i][0] <= contact_points_vector[i+1][0] -
                          min_foot_separation_h for i in range(0, steps_taken-1, 2))
         model.addConstrs(contact_points_vector[i+1][0] >= contact_points_vector[i+2][0] +
@@ -87,10 +86,10 @@ def get_footstep_positions(model: gp.Model,
                     rhs[i][j][k] == -(b[j][k]) + ((1 - active_matrix[i, j]) * M))
             model.addConstr(A[j] @ contact_points_vector[i] <= rhs[i][j])
     model.optimize()
-    print(active_matrix.shape)
-    for i in range(steps_taken):
-        print(i, end="\t")
-        for j in range(no_regions):
-            print(active_matrix[i, j], end=' ')
-        print('\n', end="")
+    # print(active_matrix.shape)
+    # for i in range(steps_taken):
+    #     print(i, end="\t")
+    #     for j in range(no_regions):
+    #         print(active_matrix[i, j], end=' ')
+    #     print('\n', end="")
     return [(point.X[0], point.X[1]) for point in contact_points_vector]
