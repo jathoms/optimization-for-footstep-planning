@@ -5,8 +5,12 @@ from time import perf_counter
 import create_environment as create
 import biped_mip_traverse_given_regions as mip
 import gurobipy as gp
+import biped
+import random
 
 reverse_search = True
+plot = True
+fig6 = True
 
 # env = np.array([[14.25, 14.6],  # 1.8 spiral?
 #                 [16.15, 14.95],
@@ -229,24 +233,24 @@ reverse_search = True
 #                 [36.925, 6.3],
 #                 [37.575, 5.6]])
 
-# env = np.array([[6.75, 8.85],  # fig4, 3
-#                 [17.7, 8.2],
-#                 [14.65, 8.25],
-#                 [11.9, 8.35],
-#                 [9.25, 8.55],
-#                 [22.55, 10.55],
-#                 [20.55, 8.55],
-#                 [20.65, 12.7],
-#                 [17.85, 12.05],
-#                 [15.6, 12.6],
-#                 [12.6, 13.1],
-#                 [10.35, 13.6],
-#                 [7.75, 13.4],
-#                 [4.95, 12.95],
-#                 [2.4, 12.35]])
+env = np.array([[6.75, 8.85],  # fig4, 3
+                [17.7, 8.2],
+                [14.65, 8.25],
+                [11.9, 8.35],
+                [9.25, 8.55],
+                [22.55, 10.55],
+                [20.55, 8.55],
+                [20.65, 12.7],
+                [17.85, 12.05],
+                [15.6, 12.6],
+                [12.6, 13.1],
+                [10.35, 13.6],
+                [7.75, 13.4],
+                [4.95, 12.95],
+                [2.4, 12.35]])
 
 
-# env = np.array([[15.775, 0.95],
+# env = np.array([[15.775, 0.95],  # funnel, 1.8
 #                 [14.625, 2.05],
 #                 [16.775, 2.1],
 #                 [17.825, 3.25],
@@ -427,72 +431,72 @@ reverse_search = True
 #                 [20.15, 9.1],
 #                 [22.8, 14.65]])
 
-env = np.array([[15.775, 0.95],  # fig 5, 1.8
-                [14.625, 2.05],
-                [16.775, 2.1],
-                [17.825, 3.25],
-                [18.775, 4.55],
-                [19.575, 5.7],
-                [20.475, 7.05],
-                [15.525, 3],
-                [13.525, 3.1],
-                [12.575, 4.2],
-                [14.175, 4.3],
-                [16.125, 4.35],
-                [17.325, 5.7],
-                [18.475, 7.1],
-                [15.825, 7.2],
-                [15.125, 5.65],
-                [13.025, 5.65],
-                [14.025, 7.25],
-                [12.425, 7.2],
-                [11.525, 5.7],
-                [10.525, 7.1],
-                [9.725, 8.5],
-                [9.025, 9.8],
-                [8.275, 11.15],
-                [21.175, 8.2],
-                [21.675, 9.3],
-                [22.425, 10.7],
-                [22.925, 11.85],
-                [19.425, 8.25],
-                [17.325, 8.1],
-                [14.925, 8.2],
-                [13.025, 8.3],
-                [11.425, 8.3],
-                [10.475, 9.6],
-                [12.025, 9.6],
-                [13.625, 9.6],
-                [16.025, 9.6],
-                [18.225, 9.55],
-                [19.875, 9.55],
-                [20.575, 11.1],
-                [18.675, 11.35],
-                [16.975, 11.4],
-                [15.175, 11.4],
-                [13.225, 11.25],
-                [10.525, 11.55],
-                [15.325, 10.55],
-                [21.125, 12.55],
-                [19.725, 12.9],
-                [18.525, 12.9],
-                [16.825, 12.95],
-                [14.675, 12.95],
-                [12.825, 13],
-                [11.175, 12.85],
-                [8.775, 12.85],
-                [11.925, 11.55],
-                [15.875, 14.35],
-                [13.875, 14.35],
-                [11.775, 14.35],
-                [17.975, 14.5],
-                [16.775, 15.3],
-                [15.525, 15.4],
-                [13.075, 15.35],
-                [13.825, 15.35],
-                [13.875, 16.95],
-                [15.875, 16.95],
-                [14.925, 18.05]])
+# env = np.array([[15.775, 0.95],  # fig 5, 1.8
+#                 [14.625, 2.05],
+#                 [16.775, 2.1],
+#                 [17.825, 3.25],
+#                 [18.775, 4.55],
+#                 [19.575, 5.7],
+#                 [20.475, 7.05],
+#                 [15.525, 3],
+#                 [13.525, 3.1],
+#                 [12.575, 4.2],
+#                 [14.175, 4.3],
+#                 [16.125, 4.35],
+#                 [17.325, 5.7],
+#                 [18.475, 7.1],
+#                 [15.825, 7.2],
+#                 [15.125, 5.65],
+#                 [13.025, 5.65],
+#                 [14.025, 7.25],
+#                 [12.425, 7.2],
+#                 [11.525, 5.7],
+#                 [10.525, 7.1],
+#                 [9.725, 8.5],
+#                 [9.025, 9.8],
+#                 [8.275, 11.15],
+#                 [21.175, 8.2],
+#                 [21.675, 9.3],
+#                 [22.425, 10.7],
+#                 [22.925, 11.85],
+#                 [19.425, 8.25],
+#                 [17.325, 8.1],
+#                 [14.925, 8.2],
+#                 [13.025, 8.3],
+#                 [11.425, 8.3],
+#                 [10.475, 9.6],
+#                 [12.025, 9.6],
+#                 [13.625, 9.6],
+#                 [16.025, 9.6],
+#                 [18.225, 9.55],
+#                 [19.875, 9.55],
+#                 [20.575, 11.1],
+#                 [18.675, 11.35],
+#                 [16.975, 11.4],
+#                 [15.175, 11.4],
+#                 [13.225, 11.25],
+#                 [10.525, 11.55],
+#                 [15.325, 10.55],
+#                 [21.125, 12.55],
+#                 [19.725, 12.9],
+#                 [18.525, 12.9],
+#                 [16.825, 12.95],
+#                 [14.675, 12.95],
+#                 [12.825, 13],
+#                 [11.175, 12.85],
+#                 [8.775, 12.85],
+#                 [11.925, 11.55],
+#                 [15.875, 14.35],
+#                 [13.875, 14.35],
+#                 [11.775, 14.35],
+#                 [17.975, 14.5],
+#                 [16.775, 15.3],
+#                 [15.525, 15.4],
+#                 [13.075, 15.35],
+#                 [13.825, 15.35],
+#                 [13.875, 16.95],
+#                 [15.875, 16.95],
+#                 [14.925, 18.05]])
 
 
 def fast_traverse_no_change(root: HullNode, end: HullNode):
@@ -503,7 +507,7 @@ def fast_traverse_no_change(root: HullNode, end: HullNode):
         end = end.parent
         nodes_traversed += 1
     path.appendleft(end)
-    print(f'fast traverse in {nodes_traversed}')
+    # print(f'fast traverse in {nodes_traversed}')
     return path
 
 
@@ -515,7 +519,7 @@ def fast_traverse_no_change_backwards(root: HullNode, end: HullNode):
         end = end.parent
         nodes_traversed += 1
     path.append(root)
-    print(f'fast traverse in {nodes_traversed}')
+    # print(f'fast traverse in {nodes_traversed}')
     return path
 
 
@@ -527,7 +531,7 @@ def fast_traverse_from_node_to_root(root: HullNode, node: HullNode):
         node = node.parent
         nodes_traversed += 1
     path.append(root)
-    print(f'fast traverse in {nodes_traversed}')
+    # print(f'fast traverse in {nodes_traversed}')
     return path
 
 
@@ -619,10 +623,10 @@ def get_distance_region(start: HullNode, end: HullNode):
 
 
 world = [createSquare(center, 0.3, False) for center in env]
+if fig6:
+    world = [create.createRect([0, 5], 12, 4)]
 
-# world = [create.createRect([0, 5], 12, 4)]
-
-# env = np.array([[0, 0], [0, 12]])
+    env = np.array([[0, 0], [0, 12]])
 
 t1 = perf_counter()
 
@@ -639,7 +643,8 @@ if reverse_search:
 else:
     root, end = search(world, startpos, endpos, [], reverse=reverse_search)
 
-print(f"graph construction took {perf_counter() - t1}")
+constr_time = perf_counter() - t1
+print(f"graph construction took {constr_time}")
 
 i = 0
 region_id_dict = {}
@@ -716,42 +721,46 @@ def replan_mip_with_graph(model: gp.Model, node, root, foot, new_startpos, endpo
     steporder = fast_traverse_no_change_backwards(root, node)
     steps = len(steporder)
 
+    print(steporder)
     model = gp.Model()
+
+    model.Params.OutputFlag = 0
 
     # contact_points = [(point.X[0], point.X[1]) for point in contacts]
 
     contact_points = mip.get_footstep_positions(
-        model, world, new_startpos, endpos, offset, reachable_distance, steporder, region_id_dict, foot, "hopefully_replanneds.txt")
+        model, world, new_startpos, endpos, offset, reachable_distance, steporder, region_id_dict, foot, "compare2.txt")
 
-    for region in world:
-        plot_hull(region)
-
-    for idx, point in enumerate(contact_points):
-        x, y = point
-        if idx <= steps-1:  # plot lines between steps
-            plt.plot([step[0] for step in contact_points[idx:idx+2]],
-                     [step[1] for step in contact_points[idx:idx+2]], ":", color="black")
-        if idx % 2 == 0:  # plot f foot
-            if foot == "left":
-                plt.plot(x, y, marker="x", markersize=10,
-                         markerfacecolor="blue", markeredgecolor="blue")
-            elif foot == "right":
-                plt.plot(x, y, marker="x", markersize=10,
-                         markerfacecolor="green", markeredgecolor="green")
-        else:  # plot f' foot
-            if foot == "right":
-                plt.plot(x, y, marker="x", markersize=10,
-                         markerfacecolor="blue", markeredgecolor="blue")
-            elif foot == "left":
-                plt.plot(x, y, marker="x", markersize=10,
-                         markerfacecolor="green", markeredgecolor="green")
-            # plot start and end points
-        plt.plot(endpos[0], endpos[1], marker="o", markersize=6, markeredgecolor="red", markerfacecolor="red",
-                 alpha=0.5)
-        plt.plot(new_startpos[0], new_startpos[1], marker="o", markersize=6, markeredgecolor="green", markerfacecolor="green",
-                 alpha=0.5)
-    plt.axis('scaled')
-    plt.show()
+    if plot:
+        for region in world:
+            plot_hull(region)
+        for idx, point in enumerate(contact_points):
+            x, y = point
+            if idx <= steps-1:  # plot lines between steps
+                plt.plot([step[0] for step in contact_points[idx:idx+2]],
+                         [step[1] for step in contact_points[idx:idx+2]], ":", color="black")
+            if idx % 2 == 0:  # plot f foot
+                if foot == "left":
+                    plt.plot(x, y, marker="x", markersize=10,
+                             markerfacecolor="blue", markeredgecolor="blue")
+                elif foot == "right":
+                    plt.plot(x, y, marker="x", markersize=10,
+                             markerfacecolor="green", markeredgecolor="green")
+            else:  # plot f' foot
+                if foot == "right":
+                    plt.plot(x, y, marker="x", markersize=10,
+                             markerfacecolor="blue", markeredgecolor="blue")
+                elif foot == "left":
+                    plt.plot(x, y, marker="x", markersize=10,
+                             markerfacecolor="green", markeredgecolor="green")
+                # plot start and end points
+            plt.plot(endpos[0], endpos[1], marker="o", markersize=6, markeredgecolor="red", markerfacecolor="red",
+                     alpha=0.5)
+            plt.plot(new_startpos[0], new_startpos[1], marker="o", markersize=6, markeredgecolor="green", markerfacecolor="green",
+                     alpha=0.5)
+        plt.axis('scaled')
+        plt.show()
+    return steps
 
 
 def plot_path(steporder):
@@ -786,26 +795,30 @@ def find_node(pos, foot, gr: nx.Graph) -> HullNode:
     for node in gr:
         if node.hull.contains(pos):
             res.append(node)
-    print('nodes in: ', res)
-    if not res:
-        print('no directly suitable node found, exiting...')
-        raise KeyError
     correct_foot = [node for node in res if node.hull.foot_in != foot]
+    if not correct_foot:
+        # print('no directly suitable node found, exiting...')
+        raise KeyError
     optimal_region = min([node for node in correct_foot],
                          key=lambda x: x.depth)
-    for region in world:
-        plot_hull(region)
-    plt.plot(pos[0], pos[1], "o", color="green")
-    plot_hull(optimal_region.hull, color='green')
-    plt.plot(pos[0], pos[1], "o", color="green")
-    plt.axis('scaled')
-    plt.show()
+    if plot:
+        for region in world:
+            plot_hull(region)
+        plt.plot(pos[0], pos[1], "o", color="green")
+        plot_hull(optimal_region.hull, color='green')
+        plt.plot(pos[0], pos[1], "o", color="green")
+        plt.axis('scaled')
+        plt.show()
     return optimal_region
 
 
 def replan(model, new_pos, foot, end_node, graph):
     new_node = find_node(new_pos, foot, graph)
-    replan_mip_with_graph(model, new_node, end_node, foot, new_pos, endpos)
+    if plot:
+        draw_graph(root, new_node, True)
+    steps = replan_mip_with_graph(
+        model, new_node, end_node, foot, new_pos, endpos)
+    return steps
 
 
 model = run_mip_with_graph(root, end)
@@ -813,19 +826,69 @@ model = run_mip_with_graph(root, end)
 
 gr = build_graph(root)
 
-for i in range(1, 100):
-    try:
-        new_idx = (i * 378467) % (len(env)-2)
-        new_pos = env[new_idx]
-        # startpointconstr_0, startpointconstr_1 = model.getConstrByName(
-        #     "startpointconstr[0]"), model.getConstrByName("startpointconstr[1]")
 
-        # startpointconstr_0.setAttr("RHS", new_pos[0])
-        # startpointconstr_1.setAttr("RHS", new_pos[1])
+def gen_data_unexpected_in_graph():
+    print(f"beginning fig ----- ({constr_time})\n",
+          file=open('compare.txt', 'a'))
+    for i in range(5, 26):
+        try:
+            new_idx = (i * 378467) % (len(env)-2)
+            new_pos = env[new_idx]
 
-        next_step = "right" if (i * 10039) % 11 >= 6 else "left"
-        # print(new_idx, new_pos, endpos, next_step)
+            print(new_pos)
 
-        replan(model, new_pos, next_step, root, gr)
-    except KeyError:
-        continue
+            next_step = "right" if (i * 10039) % 11 >= 6 else "left"
+            # print(new_idx, new_pos, endpos, next_step)
+
+            no_steps = replan(model, new_pos, next_step, root, gr)
+
+            new_model = gp.Model()
+
+            biped.get_constraints(
+                new_model, world, start=new_pos, end=endpos, no_regions=len(world), steps_taken=no_steps, reachable_distance=reachable_distance, logfile='compare.txt', foot=next_step)
+
+            print("", file=open('compare.txt', 'a'))
+
+        except KeyError:
+            continue
+
+    print("end\n", file=open('compare.txt', 'a'))
+
+
+def results_unexpected_fig6():
+    print(f"beginning fi6----- ({constr_time})\n",
+          file=open('compare.txt', 'a'))
+    for i in range(5, 26):
+        try:
+            x = random.uniform(-3.5, 3.5)
+            y = random.uniform(-6, 14)
+
+            new_pos = np.array([x, y])
+
+            # plt.plot(x, y, 'o', color='green')
+            # plt.plot(endpos[0], endpos[1], 'o', color='red')
+
+            # for r in world:
+            #     plot_hull(r)
+            # plt.axis('scaled')
+            # plt.show()
+
+            next_step = "right" if (i * 10039) % 11 >= 6 else "left"
+
+            # print(new_idx, new_pos, endpos, next_step)
+
+            no_steps = replan(model, new_pos, next_step, root, gr)
+
+            new_model = gp.Model()
+
+            biped.get_constraints(
+                new_model, world, start=new_pos, end=endpos, no_regions=len(world), steps_taken=no_steps, reachable_distance=reachable_distance, logfile='compare2.txt', foot=next_step)
+
+            print("", file=open('compare2.txt', 'a'))
+        except KeyError:
+            continue
+
+    print("end\n", file=open('compare2.txt', 'a'))
+
+
+results_unexpected_fig6()

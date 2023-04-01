@@ -6,6 +6,7 @@ from sklearn import cluster
 from graph_construction import linearise_reachable_region
 import io
 import sys
+from time import perf_counter
 
 m = 16  # number of wanted regions (default)
 n = 2  # dimension of space
@@ -40,7 +41,8 @@ def get_constraints(model: gp.Model,
                     steps_taken=steps,
                     decreasing_steps=False,
                     reachable_distance=default_dist,
-                    logfile="log.txt"):
+                    logfile="log.txt",
+                    foot=first_foot_forward):
 
     all_constrs = np.array(
         [np.array([coords[:n] for coords in hull.equations]) for hull in all_hulls], dtype=object)
@@ -66,7 +68,7 @@ def get_constraints(model: gp.Model,
     model.addConstr(contact_points_vector[0] == start)
 
     # bipedality constraint.
-    if first_foot_forward == 'right':
+    if foot == 'right':
         model.addConstrs(contact_points_vector[i][0] <= contact_points_vector[i+1][0] -
                          min_foot_separation_h for i in range(0, steps_taken-1, 2))
         model.addConstrs(contact_points_vector[i+1][0] >= contact_points_vector[i+2][0] +
@@ -90,7 +92,11 @@ def get_constraints(model: gp.Model,
     buffer = io.StringIO()
     # print(f"buffering for {steps_taken} steps")
     sys.stdout = buffer
+    t1 = perf_counter()
     model.optimize()
+    time_taken = perf_counter() - t1
+    print('time taken:',  time_taken, file=open(logfile, "a"))
+    return
     print(steps_taken, "steps taken.")
     print(model.NodeCount, " nodes traversed.")
     sys.stdout = sys.__stdout__
@@ -112,6 +118,7 @@ def get_constraints(model: gp.Model,
     res = get_constraints(gp.Model(f'{steps_taken*decrease_amount}_steps'), all_hulls, start, end,
                           no_regions, int(steps_taken*(decrease_amount)), decreasing_steps=True, reachable_distance=reachable_distance, logfile=logfile)
     if res == gp.GRB.INFEASIBLE:
+
         # print("@@@@@@@@@@@@@@@@@@@\n", output, "\n@@@@@@@@@@@@@@@@@@@@")
         try:
             open(logfile, "w").writelines(output)
@@ -130,12 +137,12 @@ def get_constraints(model: gp.Model,
                     plt.plot(x, y, marker="x", markersize=10,
                              markerfacecolor="blue", markeredgecolor="blue")
                     linearise_reachable_region(reachable_distance, 10, [
-                                               x, y], foot=('right' if first_foot_forward == 'left' else 'right'), offset=min_foot_separation_h)
+                                               x, y], foot=('right' if foot == 'left' else 'right'), offset=min_foot_separation_h)
                 else:
                     plt.plot(x, y, marker="x", markersize=10,
                              markerfacecolor="green", markeredgecolor="green")
                     linearise_reachable_region(reachable_distance, 10, [
-                                               x, y], foot=('left' if first_foot_forward == 'left' else 'right'), offset=min_foot_separation_h)
+                                               x, y], foot=('left' if foot == 'left' else 'right'), offset=min_foot_separation_h)
 
             plt.plot(end[0], end[1], marker="o", markersize=6, markeredgecolor="red", markerfacecolor="red",
                      alpha=0.5)
@@ -144,11 +151,11 @@ def get_constraints(model: gp.Model,
             print("Start Point:", start, "\nEnd Point:", end)
             print(
                 f"Near optimal with {steps_taken} steps (within {int(steps_taken - (steps_taken*decrease_amount))} steps)")
-            for i in range(steps_taken):
-                print(i, end="\t")
-                for j in range(no_regions):
-                    print(int(active[i, j].X), end=' ')
-                print('\n', end="")
+            # for i in range(steps_taken):#print matrix
+            #     print(i, end="\t")
+            #     for j in range(no_regions):
+            #         print(int(active[i, j].X), end=' ')
+            #     print('\n', end="")
 
         except gp.GurobiError:
             print(f"Problem is infeasible for {steps_taken} steps.")

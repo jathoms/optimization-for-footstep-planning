@@ -4,7 +4,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 from scipy.optimize import linprog
-
+from OO_graph_objects import RootNodePoint
 from create_environment import createSquare
 
 
@@ -51,10 +51,10 @@ class VisionHull(ConvexHull):
             extremities = [self.source.points[v] for v in self.source.vertices]
             super().__init__(np.vstack([self.linearise_reachable_region(
                 x) for x in extremities]))
-            plot_hull(self, color="green")
+            plot_hull_old(self, color="green")
         else:
             super().__init__(self.linearise_reachable_region(self.source))
-            plot_hull(self, color="red")
+            plot_hull_old(self, color="red")
 
     def linearise_reachable_region(self, centre=[0, 0], foot="right"):
         # global foot
@@ -191,7 +191,7 @@ def intersect_reachable_region(environment: list[ConvexHull], r_region: ConvexHu
         i = intersection(hull, r_region)
         if i:
             for hull2 in environment:
-                plot_hull(hull2)
+                plot_hull_old(hull2)
             # plot_hull(i, title="intersection", color="red")
             # plt.show()
             same_parent_regions = [
@@ -210,17 +210,17 @@ def intersect_reachable_region(environment: list[ConvexHull], r_region: ConvexHu
                               region.get_vertices())
                         walkable_regions.remove(region)
                         walkable_regions.append(i)
-                        plot_hull(i, color="red")
+                        plot_hull_old(i, color="red")
 
                     elif larger_region is region:
-                        plot_hull(region, color="red")
+                        plot_hull_old(region, color="red")
                         pass
                 else:
                     walkable_regions.append(i)
-                    plot_hull(i, color="red")
+                    plot_hull_old(i, color="red")
                     continue
             if not same_parent_regions:
-                plot_hull(i, color="red")
+                plot_hull_old(i, color="red")
                 walkable_regions.append(i)
     # intersection of convex hulls is convex
 
@@ -341,7 +341,8 @@ def graph_pathfind(environment: list[ConvexHull], start_point, end_point):
                 return
 
 
-def plot_hull(hull, title="", color="black", alpha=1):
+def plot_hull_old(hull, title="", color="black", alpha=1):
+
     plt.title(title)
     vertices = hull.points
     for simplex in hull.simplices:

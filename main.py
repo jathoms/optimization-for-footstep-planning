@@ -52,8 +52,8 @@ no_steps = {}
 step_dist = {}
 
 
-no_steps["Fig_1"] = 19  # 19, 46
-step_dist["Fig_1"] = 1  # 1, 0.6
+no_steps["Fig_1"] = 46  # 19, 46
+step_dist["Fig_1"] = 0.6  # 1, 0.6
 test_cases["Fig_1"] = np.array([[18.8, 1.7],
                                 [18.8, 3.4],
                                 [18.85, 5.55],

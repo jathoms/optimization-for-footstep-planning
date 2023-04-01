@@ -1,49 +1,71 @@
 Gurobi Optimizer version 9.5.2 build v9.5.2rc0 (mac64[x86])
 Thread count: 4 physical cores, 8 logical processors, using up to 8 threads
-Optimize a model with 8285 rows, 5206 columns and 17590 nonzeros
-Model fingerprint: 0xc5db9296
-Model has 18 quadratic constraints
-Variable types: 4180 continuous, 1026 integer (1026 binary)
+Optimize a model with 20057 rows, 12604 columns and 42592 nonzeros
+Model fingerprint: 0x91de5959
+Model has 45 quadratic constraints
+Variable types: 10120 continuous, 2484 integer (2484 binary)
 Coefficient statistics:
   Matrix range     [1e+00, 1e+03]
   QMatrix range    [1e+00, 1e+00]
   Objective range  [0e+00, 0e+00]
   Bounds range     [1e+00, 1e+00]
   RHS range        [1e-01, 1e+03]
-  QRHS range       [1e+00, 1e+00]
-Presolve removed 8192 rows and 5072 columns
-Presolve time: 0.03s
-Presolved: 93 rows, 134 columns, 520 nonzeros
-Presolved model has 18 quadratic constraint(s)
-Variable types: 46 continuous, 88 integer (88 binary)
+  QRHS range       [4e-01, 4e-01]
+Presolve removed 19818 rows and 12049 columns
+Presolve time: 0.16s
+Presolved: 239 rows, 555 columns, 2402 nonzeros
+Presolved model has 43 quadratic constraint(s)
+Variable types: 119 continuous, 436 integer (436 binary)
 
-Root relaxation: objective 0.000000e+00, 54 iterations, 0.00 seconds (0.00 work units)
+Root relaxation: objective 0.000000e+00, 130 iterations, 0.01 seconds (0.00 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
 
+     0     0    0.00000    0   26          -    0.00000      -     -    0s
+     0     0    0.00000    0   41          -    0.00000      -     -    0s
+     0     0    0.00000    0   41          -    0.00000      -     -    0s
+     0     0    0.00000    0   11          -    0.00000      -     -    0s
+     0     0    0.00000    0   17          -    0.00000      -     -    0s
+     0     0    0.00000    0    4          -    0.00000      -     -    0s
+     0     0    0.00000    0   26          -    0.00000      -     -    0s
      0     0    0.00000    0    6          -    0.00000      -     -    0s
      0     0    0.00000    0    4          -    0.00000      -     -    0s
-     0     0    0.00000    0    6          -    0.00000      -     -    0s
-     0     0    0.00000    0    6          -    0.00000      -     -    0s
-H    0     0                       0.0000000    0.00000  0.00%     -    0s
-*    0     0               0       0.0000000    0.00000  0.00%     -    0s
+     0     0    0.00000    0    8          -    0.00000      -     -    0s
+     0     0    0.00000    0    8          -    0.00000      -     -    0s
+     0     0    0.00000    0    8          -    0.00000      -     -    0s
+     0     0    0.00000    0    8          -    0.00000      -     -    0s
+     0     0    0.00000    0    8          -    0.00000      -     -    0s
+     0     0    0.00000    0    1          -    0.00000      -     -    0s
+     0     0    0.00000    0   19          -    0.00000      -     -    0s
+     0     0    0.00000    0   17          -    0.00000      -     -    0s
+     0     0    0.00000    0    4          -    0.00000      -     -    0s
+     0     0    0.00000    0    4          -    0.00000      -     -    0s
+     0     0    0.00000    0    2          -    0.00000      -     -    0s
+     0     0    0.00000    0    2          -    0.00000      -     -    0s
+     0     0    0.00000    0    2          -    0.00000      -     -    0s
+     0     0    0.00000    0    2          -    0.00000      -     -    0s
+     0     0    0.00000    0    2          -    0.00000      -     -    0s
+     0     2    0.00000    0    2          -    0.00000      -     -    0s
+H  105     6                       0.0000000    0.00000  0.00%  21.8    0s
+*  105     6              15       0.0000000    0.00000  0.00%  21.9    0s
 
 Cutting planes:
-  Cover: 3
-  Implied bound: 1
-  Clique: 1
-  MIR: 11
-  StrongCG: 2
-  GUB cover: 1
-  Relax-and-lift: 5
+  Gomory: 2
+  Cover: 28
+  Implied bound: 11
+  Clique: 26
+  MIR: 15
+  StrongCG: 3
+  GUB cover: 4
+  Relax-and-lift: 2
 
-Explored 1 nodes (319 simplex iterations) in 0.05 seconds (0.03 work units)
+Explored 144 nodes (6456 simplex iterations) in 0.51 seconds (0.29 work units)
 Thread count was 8 (of 8 available processors)
 
 Solution count 1: 0 
 
 Optimal solution found (tolerance 1.00e-04)
 Best objective 0.000000000000e+00, best bound 0.000000000000e+00, gap 0.0000%
-19 steps taken.
-1.0  nodes traversed.
+46 steps taken.
+144.0  nodes traversed.

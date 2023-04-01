@@ -3,6 +3,7 @@ import gurobipy as gp
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.spatial import ConvexHull
+from time import perf_counter
 
 n = 2  # dimension
 M = 1000  # big number
@@ -78,14 +79,17 @@ def get_footstep_positions(model: gp.Model,
             contact_points_vector[i] - contact_points_vector[i+1]))
         model.addConstr(dists[i] @ dists[i] <= reachable_distance**2)
     # environment constraints
-    print(steps_taken)
     for i in range(steps_taken):
         for j in range(no_regions):
             for k in range(len(b[j])):
                 model.addConstr(
                     rhs[i][j][k] == -(b[j][k]) + ((1 - active_matrix[i, j]) * M))
             model.addConstr(A[j] @ contact_points_vector[i] <= rhs[i][j])
+
+    t1 = perf_counter()
     model.optimize()
+    print("time taken:", perf_counter() - t1, "steps taken:",
+          steps_taken, file=open(logfile, 'a'))
     # print(active_matrix.shape)
     # for i in range(steps_taken):
     #     print(i, end="\t")

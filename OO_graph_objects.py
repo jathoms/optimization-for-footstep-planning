@@ -4,7 +4,6 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 from scipy.optimize import linprog
-from graph_construction import plot_hull
 from create_environment import createSquare
 import time
 from hierarchy_tree import hierarchy_pos
@@ -13,7 +12,12 @@ import sys
 
 walkable_regions = []
 check_for_redundant_regions = True
+plot = False
 regionparentmap = {}
+
+config = [3, 16, "left", 0.1]
+
+[reachable_distance, no_points, default_foot, offset] = config
 
 
 class HullSection(ConvexHull):
@@ -60,6 +64,25 @@ class HullNode():
     def remove_child(self, child):
         if child in self.children:
             self.children.remove(child)
+
+
+class RootHull():
+    def __init__(self, pos, env_region, foot_in_this_hull):
+        self.parent_hull = env_region
+        self.foot_in = foot_in_this_hull
+        self.vision = VisionHull(
+            pos, "right" if foot_in_this_hull == "left" else "left")
+
+    def contains(a, b):
+        return False
+
+
+class RootNodePoint(HullNode):
+    def __init__(self, pos, starthull, foot):
+        self.hull = RootHull(pos, starthull, foot)
+        self.parent = None
+        self.children: list[HullNode] = []
+        self.depth = 0
 
 
 class VisionHull(ConvexHull):
@@ -323,8 +346,6 @@ env = np.array([[18.65, 14.8],  # 1.5 spiral?
 world = [createSquare(center, 0.3, False) for center in env]
 
 
-config = [1, 16, "left", 0.1]
-
 [reachable_distance, no_points, foot, offset] = config
 
 
@@ -438,11 +459,9 @@ def search(world, start, end, config, reverse=False):
     initial_vision = VisionHull(start, foot)
     initial_sections = initial_vision.intersect_with_world(world, [])
     if reverse:
-        root = HullNode(hull=None, parent=None, children=[],
-                        depth=0, starthull=world[-1])
+        root = RootNodePoint(end, world[-1], default_foot)
     else:
-        root = HullNode(hull=None, parent=None, children=[],
-                        depth=0, starthull=world[0])
+        root = RootNodePoint(start, world[0], default_foot)
     for initial_section in initial_sections:
         root.add_child_from_hullsection(initial_section)
     current = root.children
@@ -458,27 +477,30 @@ def search(world, start, end, config, reverse=False):
         if check_for_redundant_regions:
             # current = cleanup_nodes(current, world)
             cleanup_nodes_change_parent(current, world)
-        # for region in world:
-        #     plot_hull(region)
-        # for region in explored_walkable_regions_left:
-        #     plot_hull(region, color="blue")
-        # for region in explored_walkable_regions_right:
-        #     plot_hull(region, color="green")
-        # for region in current:
-        #     plot_hull(region.hull, color="pink")
-        # plt.plot(start[0], start[1], "o", color='brown')
-        # plt.plot(end[0], end[1], "o", color="red")
-        # for region in current:
-        #     plot_hull(region.hull.vision, color='cyan', alpha=0.5)
-        # plt.axis("scaled")
-        # plt.show()
-        # draw_graph(root)
-        # plt.show()
+        if plot:
+            for region in world:
+                plot_hull(region)
+            for region in explored_walkable_regions_left:
+                plot_hull(region, color="blue")
+            for region in explored_walkable_regions_right:
+                plot_hull(region, color="green")
+            for region in current:
+                plot_hull(region.hull, color="pink")
+            plt.plot(start[0], start[1], "o", color='brown')
+            plt.plot(end[0], end[1], "o", color="red")
+            # for region in current:
+            #     plot_hull(region.hull.vision, color='cyan', alpha=0.5)
+            plt.axis("scaled")
+            plt.show()
+            draw_graph(root)
+            pass
         print("taking step", step)
         for region in current:
             if region.hull.contains(end):
-                # plt.axis("scaled")
-                # plt.show()
+                if plot:
+                    plt.axis("scaled")
+                    plt.show()
+                    draw_graph(root, region, True)
                 print("acquired")
                 return root, region
         new = []
@@ -506,8 +528,8 @@ def search(world, start, end, config, reverse=False):
         step += 1
 
 
-def draw_graph(root: HullNode, end=None):
-
+def draw_graph(root: HullNode, end=None, highlight_path=False):
+    path = []
     gr = nx.Graph()
 
     gr.add_node(root)
@@ -520,16 +542,26 @@ def draw_graph(root: HullNode, end=None):
             gr.add_edge(root, child)
             populate(child)
 
+        if highlight_path and root is end:
+            node = root
+            while node:
+                path.append(node)
+                node = node.parent
+
     populate(root)
 
+    edge_colors = [
+        "#00B2B2" if u in path and v in path else "#000000" for u, v in gr.edges]
+
     print(gr)
+    plt.figure(dpi=500, figsize=(2, 1))
     if nx.is_tree(gr):
         pos = hierarchy_pos(gr, root)
-        nx.draw(gr, pos=pos, node_size=10,
-                node_color=["#00B2B2" if node is end else '#B200B2' for node in gr])
+        nx.draw(gr, pos=pos, node_size=0.5, edge_color=edge_colors, width=0.5,
+                node_color=["#00B2B2" if node in path else '#B200B2' for node in gr])
     else:
-        nx.draw(gr, node_size=10,
-                node_color=["#00B2B2" if node is end else '#B200B2' for node in gr])
+        nx.draw(gr, node_size=5, edge_color=edge_colors, width=1,
+                node_color=["#00B2B2" if node in path else '#B200B2' for node in gr])
     # colours = {root: "#FF0000", end: "000000"}
 
     # nx.draw(gr, node_color=[
@@ -538,6 +570,18 @@ def draw_graph(root: HullNode, end=None):
     # nx.draw(gr, node_color=[
     #     "#FF0000" if node.depth == 0 or node.depth == steps + 1 else "#000000" for node in gr], node_size=15)
     plt.show()
+
+
+def plot_hull(hull, title="", color="black", alpha=1):
+    if isinstance(hull, RootHull):
+        return
+    plt.title(title)
+    vertices = hull.points
+    for simplex in hull.simplices:
+        plt.plot(vertices[simplex, 0], vertices[simplex, 1],
+                 '-', color=color, alpha=alpha)
+    # plt.show()
+    return
 
 
 start = env[0]

@@ -1,0 +1,45 @@
+Gurobi Optimizer version 9.5.2 build v9.5.2rc0 (mac64[x86])
+Thread count: 4 physical cores, 8 logical processors, using up to 8 threads
+Optimize a model with 2729 rows, 1738 columns and 5782 nonzeros
+Model fingerprint: 0x1268b598
+Model has 21 quadratic constraints
+Variable types: 1408 continuous, 330 integer (330 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+03]
+  QMatrix range    [1e+00, 1e+00]
+  Objective range  [0e+00, 0e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e-01, 1e+03]
+  QRHS range       [9e+00, 9e+00]
+Presolve removed 2623 rows and 1627 columns
+Presolve time: 0.01s
+Presolved: 106 rows, 111 columns, 407 nonzeros
+Presolved model has 20 quadratic constraint(s)
+Variable types: 54 continuous, 57 integer (57 binary)
+
+Root relaxation: objective 0.000000e+00, 70 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    0.00000    0    5          -    0.00000      -     -    0s
+H    0     0                       0.0000000    0.00000  0.00%     -    0s
+*    0     0               0       0.0000000    0.00000  0.00%     -    0s
+
+Cutting planes:
+  Gomory: 3
+  Implied bound: 5
+  Clique: 20
+  MIR: 4
+  StrongCG: 1
+  Relax-and-lift: 10
+
+Explored 1 nodes (141 simplex iterations) in 0.02 seconds (0.02 work units)
+Thread count was 8 (of 8 available processors)
+
+Solution count 1: 0 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 0.000000000000e+00, best bound 0.000000000000e+00, gap 0.0000%
+22 steps taken.
+1.0  nodes traversed.
