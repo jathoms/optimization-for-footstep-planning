@@ -88,7 +88,8 @@ def get_footstep_positions(model: gp.Model,
 
     t1 = perf_counter()
     model.optimize()
-    print("time taken:", perf_counter() - t1, "steps taken:",
+    time_taken = perf_counter() - t1
+    print("time taken:", time_taken, "steps taken:",
           steps_taken, file=open(logfile, 'a'))
     # print(active_matrix.shape)
     # for i in range(steps_taken):

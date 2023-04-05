@@ -96,6 +96,11 @@ def get_constraints(model: gp.Model,
     model.optimize()
     time_taken = perf_counter() - t1
     print('time taken:',  time_taken, file=open(logfile, "a"))
+    # for i in range(steps_taken):  # print matrix
+    #     print(i, end="\t")
+    #     for j in range(no_regions):
+    #         print(int(active[i, j].X), end=' ')
+    #     print('\n', end="")
     return
     print(steps_taken, "steps taken.")
     print(model.NodeCount, " nodes traversed.")
@@ -151,11 +156,6 @@ def get_constraints(model: gp.Model,
             print("Start Point:", start, "\nEnd Point:", end)
             print(
                 f"Near optimal with {steps_taken} steps (within {int(steps_taken - (steps_taken*decrease_amount))} steps)")
-            # for i in range(steps_taken):#print matrix
-            #     print(i, end="\t")
-            #     for j in range(no_regions):
-            #         print(int(active[i, j].X), end=' ')
-            #     print('\n', end="")
 
         except gp.GurobiError:
             print(f"Problem is infeasible for {steps_taken} steps.")

@@ -12,12 +12,12 @@ Coefficient statistics:
   RHS range        [1e-01, 1e+03]
   QRHS range       [4e-01, 4e-01]
 Presolve removed 19818 rows and 12049 columns
-Presolve time: 0.16s
+Presolve time: 0.15s
 Presolved: 239 rows, 555 columns, 2402 nonzeros
 Presolved model has 43 quadratic constraint(s)
 Variable types: 119 continuous, 436 integer (436 binary)
 
-Root relaxation: objective 0.000000e+00, 130 iterations, 0.01 seconds (0.00 work units)
+Root relaxation: objective 0.000000e+00, 130 iterations, 0.00 seconds (0.00 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
@@ -60,12 +60,11 @@ Cutting planes:
   GUB cover: 4
   Relax-and-lift: 2
 
-Explored 144 nodes (6456 simplex iterations) in 0.51 seconds (0.29 work units)
+Explored 144 nodes (6456 simplex iterations) in 0.42 seconds (0.29 work units)
 Thread count was 8 (of 8 available processors)
 
 Solution count 1: 0 
 
 Optimal solution found (tolerance 1.00e-04)
 Best objective 0.000000000000e+00, best bound 0.000000000000e+00, gap 0.0000%
-46 steps taken.
-144.0  nodes traversed.
+time taken: 0.4303750079998281

@@ -43,3 +43,20 @@ Optimal solution found (tolerance 1.00e-04)
 Best objective 0.000000000000e+00, best bound 0.000000000000e+00, gap 0.0000%
 22 steps taken.
 1.0  nodes traversed.
+time taken: 0.004270809004083276 steps taken: 11
+time taken: 0.0032207109907176346 steps taken: 8
+time taken: 0.0017437960195820779 steps taken: 5
+time taken: 0.003067841986194253 steps taken: 8
+time taken: 0.0031999509956222028 steps taken: 9
+time taken: 0.004180505988188088 steps taken: 11
+time taken: 0.002152809000108391 steps taken: 6
+time taken: 0.0016091220022644848 steps taken: 4
+time taken: 0.0026706380012910813 steps taken: 6
+time taken: 0.0019616649951785803 steps taken: 6
+time taken: 0.0034082040074281394 steps taken: 9
+time taken: 0.004050821997225285 steps taken: 11
+time taken: 0.003109290002612397 steps taken: 8
+time taken: 0.004261528985807672 steps taken: 11
+time taken: 0.0031006399949546903 steps taken: 8
+time taken: 0.004283180023776367 steps taken: 11
+time taken: 0.004031917022075504 steps taken: 10

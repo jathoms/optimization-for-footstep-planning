@@ -4,18 +4,18 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 from scipy.optimize import linprog
-from create_environment import createSquare
+
 import time
 from hierarchy_tree import hierarchy_pos
 import networkx as nx
-import sys
+
 
 walkable_regions = []
 check_for_redundant_regions = True
 plot = False
 regionparentmap = {}
 
-config = [3, 16, "left", 0.1]
+config = [1.8, 16, "left", 0.1]
 
 [reachable_distance, no_points, default_foot, offset] = config
 
@@ -46,9 +46,20 @@ class HullNode():
         self.children: list[HullNode] = children
         self.depth = depth
 
-    def add_child_from_hullsection(self, child: HullSection):
+    def add_child_from_hullsection_intersection_with_world(self, child: HullSection):
+        child = HullNode(hull=child, parent=self,
+                         children=[], depth=self.depth+1)
         self.children.append(
-            HullNode(hull=child, parent=self, children=[], depth=self.depth+1))
+            child)
+        return child
+
+    def add_child_from_hullsection_intersection_with_node(self, child: HullSection, node):
+        child.parent_hull = node.hull.parent_hull
+        child = HullNode(hull=child, parent=self,
+                         children=[], depth=self.depth+1)
+        self.children.append(
+            child)
+        return child
 
     def add_child_node(self, node):
         self.children.append(node)
@@ -59,7 +70,7 @@ class HullNode():
 
     def add_children(self, children):
         for child in children:
-            self.add_child_from_hullsection(child)
+            self.add_child_from_hullsection_intersection_with_world(child)
 
     def remove_child(self, child):
         if child in self.children:
@@ -83,6 +94,7 @@ class RootNodePoint(HullNode):
         self.parent = None
         self.children: list[HullNode] = []
         self.depth = 0
+        self.pos = pos
 
 
 class VisionHull(ConvexHull):
@@ -248,64 +260,64 @@ class VisionHull(ConvexHull):
 #                 [22.8, 14.65]])
 
 
-env = np.array([[18.65, 14.8],  # 1.5 spiral?
-                [15.75, 14.85],
-                [21.1, 14.25],
-                [23.65, 12.85],
-                [24.9, 10.7],
-                [25.25, 8.35],
-                [24.8, 5.95],
-                [23.3, 4.5],
-                [21.05, 3.55],
-                [18.45, 3.1],
-                [16.05, 3],
-                [13.9, 3.55],
-                [11.9, 4.7],
-                [10.35, 6.35],
-                [9.85, 8.1],
-                [10.25, 9.95],
-                [11.7, 11.45],
-                [13.4, 11.75],
-                [15.05, 11.65],
-                [16.7, 11.25],
-                [18.05, 10.75],
-                [19.2, 9.85],
-                [19.8, 8.5],
-                [19.25, 7.5],
-                [17.8, 7.1],
-                [16.8, 7.15],
-                [15.25, 7.45],
-                [17.1, 15.1],
-                [19.9, 14.7],
-                [22.35, 13.45],
-                [24.35, 11.7],
-                [25.05, 9.55],
-                [25, 7.25],
-                [23.7, 5.1],
-                [22.15, 4.15],
-                [19.7, 3.17],
-                [17.25, 3.15],
-                [14.9, 3.2],
-                [12.9, 4.25],
-                [11.25, 5.5],
-                [10, 7.25],
-                [10, 8.8],
-                [10.8, 10.6],
-                [12.3, 11.55],
-                [15.05, 6.3],
-                [15.8, 5.6],
-                [16.85, 5.15],
-                [18.3, 5.2],
-                [19.55, 5.4],
-                [20.6, 5.9],
-                [21.2, 6.65],
-                [21.65, 7.45],
-                [21.9, 8.5],
-                [21.75, 9.5],
-                [21.5, 10.45],
-                [21, 11.35],
-                [20.4, 12.05],
-                [19.5, 12.5]])
+# env = np.array([[18.65, 14.8],  # 1.5 spiral?
+#                 [15.75, 14.85],
+#                 [21.1, 14.25],
+#                 [23.65, 12.85],
+#                 [24.9, 10.7],
+#                 [25.25, 8.35],
+#                 [24.8, 5.95],
+#                 [23.3, 4.5],
+#                 [21.05, 3.55],
+#                 [18.45, 3.1],
+#                 [16.05, 3],
+#                 [13.9, 3.55],
+#                 [11.9, 4.7],
+#                 [10.35, 6.35],
+#                 [9.85, 8.1],
+#                 [10.25, 9.95],
+#                 [11.7, 11.45],
+#                 [13.4, 11.75],
+#                 [15.05, 11.65],
+#                 [16.7, 11.25],
+#                 [18.05, 10.75],
+#                 [19.2, 9.85],
+#                 [19.8, 8.5],
+#                 [19.25, 7.5],
+#                 [17.8, 7.1],
+#                 [16.8, 7.15],
+#                 [15.25, 7.45],
+#                 [17.1, 15.1],
+#                 [19.9, 14.7],
+#                 [22.35, 13.45],
+#                 [24.35, 11.7],
+#                 [25.05, 9.55],
+#                 [25, 7.25],
+#                 [23.7, 5.1],
+#                 [22.15, 4.15],
+#                 [19.7, 3.17],
+#                 [17.25, 3.15],
+#                 [14.9, 3.2],
+#                 [12.9, 4.25],
+#                 [11.25, 5.5],
+#                 [10, 7.25],
+#                 [10, 8.8],
+#                 [10.8, 10.6],
+#                 [12.3, 11.55],
+#                 [15.05, 6.3],
+#                 [15.8, 5.6],
+#                 [16.85, 5.15],
+#                 [18.3, 5.2],
+#                 [19.55, 5.4],
+#                 [20.6, 5.9],
+#                 [21.2, 6.65],
+#                 [21.65, 7.45],
+#                 [21.9, 8.5],
+#                 [21.75, 9.5],
+#                 [21.5, 10.45],
+#                 [21, 11.35],
+#                 [20.4, 12.05],
+#                 [19.5, 12.5]])
 
 
 # env = np.array([[14.25, 14.6],
@@ -343,7 +355,7 @@ env = np.array([[18.65, 14.8],  # 1.5 spiral?
 #                 [2.4, 12.35]])
 
 
-world = [createSquare(center, 0.3, False) for center in env]
+# world = [createSquare(center, 0.3, False) for center in env]
 
 
 [reachable_distance, no_points, foot, offset] = config
@@ -463,7 +475,8 @@ def search(world, start, end, config, reverse=False):
     else:
         root = RootNodePoint(start, world[0], default_foot)
     for initial_section in initial_sections:
-        root.add_child_from_hullsection(initial_section)
+        root.add_child_from_hullsection_intersection_with_world(
+            initial_section)
     current = root.children
 
     while True:
@@ -524,6 +537,15 @@ def search(world, start, end, config, reverse=False):
         if len(current) == 0:
             print('infeasible')
             return None
+        # for r in world:
+        #     plot_hull(r)
+        # plot_hull(current[0].hull.vision, color='cyan', alpha=0.5)
+
+        # for n in current[0].children:
+        #     plot_hull(n.hull, color='pink')
+        # plot_hull(current[0].hull, color='red')
+        # plt.axis('scaled')
+        # plt.show()
         current = new
         step += 1
 
@@ -572,6 +594,23 @@ def draw_graph(root: HullNode, end=None, highlight_path=False):
     plt.show()
 
 
+def fill_graph_from_root(root):
+
+    gr = nx.Graph()
+
+    def populate(root):
+        if root is None:
+            return
+        for child in root.children:
+            gr.add_node(child)
+            gr.add_edge(root, child)
+            populate(child)
+
+    populate(root)
+
+    return gr
+
+
 def plot_hull(hull, title="", color="black", alpha=1):
     if isinstance(hull, RootHull):
         return
@@ -580,9 +619,85 @@ def plot_hull(hull, title="", color="black", alpha=1):
     for simplex in hull.simplices:
         plt.plot(vertices[simplex, 0], vertices[simplex, 1],
                  '-', color=color, alpha=alpha)
+
     # plt.show()
     return
 
 
-start = env[0]
-end = env[-1]
+def create_new_graph_in_search_of_other_graph(world, start_point, start_hull: ConvexHull, existing_graph: nx.Graph, start_foot):
+    step = 2  # first step is counted as initial position of non-starting foot, first region generated is technically step 2
+    foot = start_foot
+    explored_walkable_regions_right = []
+    explored_walkable_regions_left = []
+    initial_vision = VisionHull(start_point, foot)
+    initial_sections = initial_vision.intersect_with_world(world, [])
+    root = RootNodePoint(start_point, start_hull, start_foot)
+    for initial_section in initial_sections:
+        root.add_child_from_hullsection_intersection_with_world(
+            initial_section)
+    current = root.children
+
+    while True:
+
+        print(f"spawned {len(current)} children")
+
+        explored_walkable_regions_left = cleanup(
+            explored_walkable_regions_left, world)
+        explored_walkable_regions_right = cleanup(
+            explored_walkable_regions_right, world)
+        if check_for_redundant_regions:
+            cleanup_nodes_change_parent(current, world)
+        if plot:
+            for region in world:
+                plot_hull(region)
+            for region in explored_walkable_regions_left:
+                plot_hull(region, color="blue")
+            for region in explored_walkable_regions_right:
+                plot_hull(region, color="green")
+            for region in current:
+                plot_hull(region.hull, color="pink")
+            plt.plot(start_point[0], start_point[1], "o", color='brown')
+            # for region in current:
+            #     plot_hull(region.hull.vision, color='cyan', alpha=0.5)
+            plt.axis("scaled")
+            plt.show()
+            draw_graph(root)
+            pass
+        print("taking step", step)
+        for region in current:
+            for node in existing_graph:
+                if isinstance(node, RootNodePoint):
+                    continue
+                intersection = region.hull.vision.hull_intersection(node.hull)
+                if intersection and intersection.foot_in == node.hull.foot_in:
+                    new_node = region.add_child_from_hullsection_intersection_with_node(
+                        intersection, node)
+                    if plot:
+                        for env_region in world:
+                            plot_hull(env_region)
+                        plot_hull(node.hull, color='red')
+                        plot_hull(region.hull.vision, color='cyan')
+                        plot_hull(intersection, color='blue')
+                        plt.axis("scaled")
+                        plt.show()
+                        draw_graph(root, intersection, True)
+                    print("acquired")
+                    return root, new_node, node  # root new, leaf new, node old
+        new = []
+        for region in current:
+            region_vision = region.get_children_hulls(
+                world, explored_walkable_regions_left if region.hull.foot_in == "right" else explored_walkable_regions_right)
+
+            if region.hull.foot_in == "right":
+                explored_walkable_regions_left.extend(region_vision)
+            elif region.hull.foot_in == "left":
+                explored_walkable_regions_right.extend(region_vision)
+            region.add_children(region_vision)
+            # plot_hull(region.hull.vision, color="orange")
+            new.extend(region.children)
+
+        if len(current) == 0:
+            print('infeasible')
+            return None
+        current = new
+        step += 1

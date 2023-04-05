@@ -5,30 +5,37 @@ from time import perf_counter
 import create_environment as create
 import biped_mip_traverse_given_regions as mip
 import gurobipy as gp
+from create_environment import createSquare
 import biped
 import random
 
 reverse_search = True
-plot = True
+plot = False
 fig6 = True
 
-# env = np.array([[14.25, 14.6],  # 1.8 spiral?
-#                 [16.15, 14.95],
-#                 [18.45, 14.95],
-#                 [20.19, 15.41],
-#                 [20.25, 14],
-#                 [21.55, 11.9],
-#                 [21.35, 10.05],
-#                 [21.81, 13.37],
-#                 [20.15, 8.9],
-#                 [18.5, 8.3],
-#                 [17.05, 8.35],
-#                 [17.3, 15.8],
-#                 [15.95, 8.85],
-#                 [14.85, 10.1],
-#                 [14.7, 11.65],
-#                 [17.0, 11.65],
-#                 [18.7, 11.65], ])
+
+class GException(Exception):
+    pass
+
+
+env = np.array([[14.25, 14.6],  # 1.8 spiral?
+                [16.15, 14.95],
+                [18.45, 14.95],
+                [20.19, 15.41],
+                [20.25, 14],
+                [21.55, 11.9],
+                [21.35, 10.05],
+                [21.81, 13.37],
+                [20.15, 8.9],
+                [18.5, 8.3],
+                [17.05, 8.35],
+                [17.3, 15.8],
+                [15.95, 8.85],
+                [14.85, 10.1],
+                [14.7, 11.65],
+                [17.0, 11.65],
+                [18.7, 11.65], ])
+
 
 # env = np.array([[17.325, 12.7],  # fu
 #                 [2.325, 1.55],
@@ -233,21 +240,21 @@ fig6 = True
 #                 [36.925, 6.3],
 #                 [37.575, 5.6]])
 
-env = np.array([[6.75, 8.85],  # fig4, 3
-                [17.7, 8.2],
-                [14.65, 8.25],
-                [11.9, 8.35],
-                [9.25, 8.55],
-                [22.55, 10.55],
-                [20.55, 8.55],
-                [20.65, 12.7],
-                [17.85, 12.05],
-                [15.6, 12.6],
-                [12.6, 13.1],
-                [10.35, 13.6],
-                [7.75, 13.4],
-                [4.95, 12.95],
-                [2.4, 12.35]])
+# env = np.array([[6.75, 8.85],  # fig4, 3
+#                 [17.7, 8.2],
+#                 [14.65, 8.25],
+#                 [11.9, 8.35],
+#                 [9.25, 8.55],
+#                 [22.55, 10.55],
+#                 [20.55, 8.55],
+#                 [20.65, 12.7],
+#                 [17.85, 12.05],
+#                 [15.6, 12.6],
+#                 [12.6, 13.1],
+#                 [10.35, 13.6],
+#                 [7.75, 13.4],
+#                 [4.95, 12.95],
+#                 [2.4, 12.35]])
 
 
 # env = np.array([[15.775, 0.95],  # funnel, 1.8
@@ -502,19 +509,19 @@ env = np.array([[6.75, 8.85],  # fig4, 3
 def fast_traverse_no_change(root: HullNode, end: HullNode):
     nodes_traversed = 0
     path = deque([])
-    while end is not root:
+    while not isinstance(end, RootNodePoint):
         path.appendleft(end)
         end = end.parent
         nodes_traversed += 1
-    path.appendleft(end)
+    path.appendleft(root)
     # print(f'fast traverse in {nodes_traversed}')
     return path
 
 
-def fast_traverse_no_change_backwards(root: HullNode, end: HullNode):
+def fast_traverse_no_change_backwards(root: RootNodePoint, end: HullNode):
     nodes_traversed = 0
     path = deque([])
-    while end is not root:
+    while not isinstance(end, RootNodePoint):
         path.append(end)
         end = end.parent
         nodes_traversed += 1
@@ -712,24 +719,28 @@ def run_mip_with_graph(root, end, foot=foot):
         plt.plot(startpos[0], startpos[1], marker="o", markersize=6, markeredgecolor="green", markerfacecolor="green",
                  alpha=0.5)
     plt.axis('scaled')
+
     plt.show()
     return model
 
 
-def replan_mip_with_graph(model: gp.Model, node, root, foot, new_startpos, endpos):
-
-    steporder = fast_traverse_no_change_backwards(root, node)
+# backwards when traversing to root, not backwards when traversing to leaf like when creating new graph to connect up.
+def replan_mip_with_graph(model: gp.Model, node: HullNode, root: RootNodePoint, foot, new_startpos, endpos, backwards=True, logfile=None):
+    if backwards:
+        steporder = fast_traverse_no_change_backwards(root, node)
+    else:
+        steporder = fast_traverse_no_change(root, node)
     steps = len(steporder)
 
-    print(steporder)
     model = gp.Model()
 
     model.Params.OutputFlag = 0
 
     # contact_points = [(point.X[0], point.X[1]) for point in contacts]
-
     contact_points = mip.get_footstep_positions(
-        model, world, new_startpos, endpos, offset, reachable_distance, steporder, region_id_dict, foot, "compare2.txt")
+        model, world, new_startpos, endpos, offset, reachable_distance, steporder, region_id_dict, foot, logfile)
+
+    print("contacts:", contact_points)
 
     if plot:
         for region in world:
@@ -791,34 +802,90 @@ def build_graph(root):
 
 def find_node(pos, foot, gr: nx.Graph) -> HullNode:
 
-    res = []
-    for node in gr:
-        if node.hull.contains(pos):
-            res.append(node)
+    res = [node for node in gr if node.hull.contains(pos)]
+    if not res:
+        return None
     correct_foot = [node for node in res if node.hull.foot_in != foot]
     if not correct_foot:
         # print('no directly suitable node found, exiting...')
-        raise KeyError
-    optimal_region = min([node for node in correct_foot],
-                         key=lambda x: x.depth)
-    if plot:
-        for region in world:
-            plot_hull(region)
-        plt.plot(pos[0], pos[1], "o", color="green")
-        plot_hull(optimal_region.hull, color='green')
-        plt.plot(pos[0], pos[1], "o", color="green")
-        plt.axis('scaled')
-        plt.show()
-    return optimal_region
+        return None
+    optimal_node = min(correct_foot, key=lambda x: x.depth)
+    # if plot:
+    #     for region in world:
+    #         plot_hull(region)
+    #     plt.plot(pos[0], pos[1], "o", color="green")
+
+    #     plt.plot(pos[0], pos[1], "o", color="green")
+    #     plt.axis('scaled')
+    #     plt.show()
+    return optimal_node
 
 
-def replan(model, new_pos, foot, end_node, graph):
+def replan(model, new_pos, foot, root, graph, logfile):
     new_node = find_node(new_pos, foot, graph)
+    if not new_node:
+        raise GException
     if plot:
         draw_graph(root, new_node, True)
     steps = replan_mip_with_graph(
-        model, new_node, end_node, foot, new_pos, endpos)
+        model, new_node, root, foot, new_pos, endpos, True, logfile)
     return steps
+
+
+def replan_from_out(model, new_pos, new_region: ConvexHull, foot, root_of_old, old_graph, logfile):
+
+    if find_node(new_pos, foot, old_graph):
+        raise GException
+    t1 = perf_counter()
+    res = create_new_graph_in_search_of_other_graph(
+        world, new_pos, new_region, old_graph, foot)
+    new_graph_constr_time = perf_counter() - t1
+
+    if not res:
+        print('infeasible now')
+        raise GException
+
+    print(f"(graph: {new_graph_constr_time})", file=open(logfile, 'a'))
+    root_node_of_new_graph, intersection, leaf_node_of_old_graph = res[
+        0], res[1], res[2]
+
+    if plot:
+        draw_graph(root_node_of_new_graph, intersection, True)
+
+    steporder_to_mid = fast_traverse_no_change(
+        root_node_of_new_graph, intersection)
+
+    intersection.parent = leaf_node_of_old_graph.parent
+
+    steporder_from_mid_to_end = fast_traverse_no_change_backwards(
+        root_of_old, intersection)
+
+    steporder_to_mid.pop()
+
+    steporder = steporder_to_mid + steporder_from_mid_to_end
+
+    # plot_path(steporder)
+
+    print('feet:', leaf_node_of_old_graph.hull.foot_in, intersection.hull.foot_in)
+
+    new_model = gp.Model()
+
+    contact_points = mip.get_footstep_positions(
+        new_model, world, new_pos, endpos, offset, reachable_distance, steporder, region_id_dict, foot, logfile)
+
+    plot_steps(contact_points, new_pos, endpos, foot, len(steporder))
+
+    # steps_from_start = replan_mip_with_graph(
+    #     model, intersection, root_node_of_new_graph, foot, new_pos, centroid(intersection), False)
+
+    # start_foot = foot if steps_from_start % 2 == 0 else (
+    #     "left" if foot == "right" else "right")
+    # intersection.parent = leaf_node_of_old_graph.parent
+    # model2 = gp.Model()
+    # steps_to_end = replan_mip_with_graph(
+    #     model2, intersection, root_of_old, start_foot, centroid(intersection), endpos, True, True)
+    # return steps_from_start + steps_to_end
+    return len(steporder)
 
 
 model = run_mip_with_graph(root, end)
@@ -827,9 +894,43 @@ model = run_mip_with_graph(root, end)
 gr = build_graph(root)
 
 
+def plot_steps(contact_points, start, end, foot, steps):
+    if plot:
+
+        for region in world:
+            plot_hull(region)
+        for idx, point in enumerate(contact_points):
+            x, y = point
+            if idx <= steps-1:  # plot lines between steps
+                plt.plot([step[0] for step in contact_points[idx:idx+2]],
+                         [step[1] for step in contact_points[idx:idx+2]], ":", color="black")
+            if idx % 2 == 0:  # plot f foot
+                if foot == "left":
+                    plt.plot(x, y, marker="x", markersize=10,
+                             markerfacecolor="blue", markeredgecolor="blue")
+                elif foot == "right":
+                    plt.plot(x, y, marker="x", markersize=10,
+                             markerfacecolor="green", markeredgecolor="green")
+            else:  # plot f' foot
+                if foot == "right":
+                    plt.plot(x, y, marker="x", markersize=10,
+                             markerfacecolor="blue", markeredgecolor="blue")
+                elif foot == "left":
+                    plt.plot(x, y, marker="x", markersize=10,
+                             markerfacecolor="green", markeredgecolor="green")
+                # plot start and end points
+            plt.plot(end[0], end[1], marker="o", markersize=6, markeredgecolor="red", markerfacecolor="red",
+                     alpha=0.5)
+            plt.plot(start[0], start[1], marker="o", markersize=6, markeredgecolor="green", markerfacecolor="green",
+                     alpha=0.5)
+        plt.axis('scaled')
+        plt.show()
+
+
 def gen_data_unexpected_in_graph():
-    print(f"beginning fig ----- ({constr_time})\n",
-          file=open('compare.txt', 'a'))
+    logfile = 'compare.txt'
+    print(f"beginning fig1----- ({constr_time})\n",
+          file=open(logfile, 'a'))
     for i in range(5, 26):
         try:
             new_idx = (i * 378467) % (len(env)-2)
@@ -837,27 +938,29 @@ def gen_data_unexpected_in_graph():
 
             print(new_pos)
 
-            next_step = "right" if (i * 10039) % 11 >= 6 else "left"
+            next_step_foot = "right" if (i * 10039) % 11 >= 6 else "left"
             # print(new_idx, new_pos, endpos, next_step)
 
-            no_steps = replan(model, new_pos, next_step, root, gr)
+            no_steps = replan(model, new_pos, next_step_foot,
+                              root, gr, logfile)
 
             new_model = gp.Model()
 
             biped.get_constraints(
-                new_model, world, start=new_pos, end=endpos, no_regions=len(world), steps_taken=no_steps, reachable_distance=reachable_distance, logfile='compare.txt', foot=next_step)
+                new_model, world, start=new_pos, end=endpos, no_regions=len(world), steps_taken=no_steps, reachable_distance=reachable_distance, logfile=logfile, foot=next_step_foot)
 
-            print("", file=open('compare.txt', 'a'))
+            print("", file=open(logfile, 'a'))
 
-        except KeyError:
+        except GException:
             continue
 
-    print("end\n", file=open('compare.txt', 'a'))
+    print("end\n", file=open(logfile, 'a'))
 
 
 def results_unexpected_fig6():
+    logfile = "compare2.txt"
     print(f"beginning fi6----- ({constr_time})\n",
-          file=open('compare.txt', 'a'))
+          file=open(logfile, 'a'))
     for i in range(5, 26):
         try:
             x = random.uniform(-3.5, 3.5)
@@ -877,18 +980,57 @@ def results_unexpected_fig6():
 
             # print(new_idx, new_pos, endpos, next_step)
 
-            no_steps = replan(model, new_pos, next_step, root, gr)
+            no_steps = replan(model, new_pos, next_step, root, gr, logfile)
 
             new_model = gp.Model()
 
             biped.get_constraints(
-                new_model, world, start=new_pos, end=endpos, no_regions=len(world), steps_taken=no_steps, reachable_distance=reachable_distance, logfile='compare2.txt', foot=next_step)
+                new_model, world, start=new_pos, end=endpos, no_regions=len(world), steps_taken=no_steps, reachable_distance=reachable_distance, logfile=logfile, foot=next_step)
 
-            print("", file=open('compare2.txt', 'a'))
-        except KeyError:
+            print("", file=open(logfile, 'a'))
+        except GException:
             continue
 
-    print("end\n", file=open('compare2.txt', 'a'))
+    print("end\n", file=open(logfile, 'a'))
 
 
-results_unexpected_fig6()
+def results_unexpected_outgraph():
+    logfile = 'compare4.txt'
+    print(f"beginning fig1 out of graph----- ({constr_time})\n",
+          file=open(logfile, 'a'))
+    for i in range(5, 56):
+        try:
+            new_idx = (i * 378467) % (len(env)-2)
+            new_pos = env[new_idx]
+
+            new_region = world[new_idx]
+
+            print(new_pos)
+
+            next_step = "right" if (i * 10039) % 11 >= 6 else "left"
+            # print(new_idx, new_pos, endpos, next_step)
+
+            # plt.figure(dpi=300, figsize=(6, 3))
+
+            no_steps = replan_from_out(
+                model, new_pos, new_region, next_step, root, gr, logfile)
+
+            new_model = gp.Model()
+
+            biped.get_constraints(
+                new_model, world, start=new_pos, end=endpos, no_regions=len(world), steps_taken=no_steps, reachable_distance=reachable_distance, logfile=logfile, foot=next_step)
+
+            print("", file=open(logfile, 'a'))
+        except GException as e:
+            # print('was in graph', e)
+            continue
+    print("end\n", file=open(logfile, 'a'))
+
+
+# results_unexpected_outgraph()
+
+gen_data_unexpected_in_graph()
+
+
+def results_graph_agnostic():
+    pass
