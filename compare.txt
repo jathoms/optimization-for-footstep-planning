@@ -1,386 +1,146 @@
-beginning fig1----- (11.179619184986223)
+Gurobi Optimizer version 9.5.2 build v9.5.2rc0 (mac64[x86])
+Thread count: 4 physical cores, 8 logical processors, using up to 8 threads
+Optimize a model with 5853 rows, 3674 columns and 12426 nonzeros
+Model fingerprint: 0xafeba96f
+Model has 10 quadratic constraints
+Variable types: 2948 continuous, 726 integer (726 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+03]
+  QMatrix range    [1e+00, 1e+00]
+  Objective range  [0e+00, 0e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e-01, 1e+03]
+  QRHS range       [3e+00, 3e+00]
+Presolve removed 5828 rows and 3645 columns
+Presolve time: 0.01s
+Presolved: 25 rows, 29 columns, 80 nonzeros
+Presolved model has 9 quadratic constraint(s)
+Variable types: 24 continuous, 5 integer (5 binary)
 
-beginning fig1----- (56.9935315369803)
+Root relaxation: objective 0.000000e+00, 14 iterations, 0.00 seconds (0.00 work units)
 
-time taken: 0.003380882990313694 steps taken: 9
-time taken: 0.024859075987478718
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
 
-time taken: 0.0024833150091581047 steps taken: 6
-time taken: 0.008680239989189431
+H    0     0                       0.0000000    0.00000  0.00%     -    0s
+*    0     0               0       0.0000000    0.00000  0.00%     -    0s
 
-time taken: 0.0013436769950203598 steps taken: 3
-time taken: 0.0016845979844219983
+Explored 1 nodes (14 simplex iterations) in 0.01 seconds (0.01 work units)
+Thread count was 8 (of 8 available processors)
 
-time taken: 0.003294513007858768 steps taken: 8
-time taken: 0.020209073001751676
+Solution count 1: 0 
 
-time taken: 0.0035900590009987354 steps taken: 9
-time taken: 0.02550834699650295
+Optimal solution found (tolerance 1.00e-04)
+Best objective 0.000000000000e+00, best bound 0.000000000000e+00, gap 0.0000%
+11 steps taken.
+1.0  nodes traversed.
 
-time taken: 0.0024841510166879743 steps taken: 6
-time taken: 0.03787882797769271
+beginning fig1----- (21.81377665099717)
 
-time taken: 0.010801811004057527 steps taken: 4
-beginning fig1----- (26.52668072801316)
+time taken: 0.0040890980017138645 steps taken: 8
 
-time taken: 0.017308709007920697 steps taken: 43
-time taken: 0.35439774399856105
+time taken: 0.007473945996025577 steps taken: 12
 
-time taken: 0.01354281700332649 steps taken: 32
-time taken: 0.1367233259952627
+time taken: 0.0031145079992711544 steps taken: 6
 
-time taken: 0.0049355580122210085 steps taken: 11
-time taken: 0.011909423978067935
+time taken: 0.005015096998249646 steps taken: 10
 
-time taken: 0.012788596999598667 steps taken: 32
-time taken: 0.15877882202039473
+time taken: 0.005043634002504405 steps taken: 10
 
-time taken: 0.015030262991786003 steps taken: 35
-time taken: 0.23394709898275323
+time taken: 0.005714170001738239 steps taken: 10
 
-time taken: 0.018252426001708955 steps taken: 45
-time taken: 0.2584489499859046
+time taken: 0.005722939000406768 steps taken: 12
 
-time taken: 0.0108748420025222 steps taken: 24
-time taken: 0.06002658401848748
+time taken: 0.0055901100058690645 steps taken: 12
 
-time taken: 0.011545938992640004 steps taken: 26
-time taken: 0.07471478899242356
+beginning fig1----- (33.12521206499514)
 
-time taken: 0.011035333998734131 steps taken: 28
-time taken: 0.10827779001556337
+beginning fig1----- (45.72894787500263)
 
-time taken: 0.0053307259804569185 steps taken: 12
-time taken: 0.012115083984099329
+time taken: 0.0055006309994496405 steps taken: 8
+beginning fig1----- (28.421661865002534)
 
-beginning fig1----- (22.114778774004662)
+time taken: 0.004298514999391045 steps taken: 8
+beginning fig1----- (1123.7458058429984)
 
-time taken: 0.004545767995296046 steps taken: 9
-time taken: 0.03287110201199539
+time taken: 0.004374921998532955 steps taken: 8
 
-time taken: 0.005049485975177959 steps taken: 10
-time taken: 0.032807454001158476
+time taken: 0.006054285004211124 steps taken: 12
 
-time taken: 0.007666359015274793 steps taken: 11
-time taken: 0.018891767016611993
+time taken: 0.0027633659992716275 steps taken: 6
 
-time taken: 0.005302995006786659 steps taken: 11
-time taken: 0.01367506297538057
+time taken: 0.00466482900083065 steps taken: 10
 
-time taken: 0.003016364003997296 steps taken: 6
-time taken: 0.007540607999544591
+time taken: 0.004734861002361868 steps taken: 10
 
-time taken: 0.004306137008825317 steps taken: 9
-time taken: 0.02167163201374933
+time taken: 0.005013014997530263 steps taken: 10
 
-time taken: 0.0058761140098795295 steps taken: 13
-time taken: 0.035088434000499547
+time taken: 0.007718995002505835 steps taken: 12
 
-time taken: 0.004413025017129257 steps taken: 8
-time taken: 0.024547052016714588
+time taken: 0.006256305001443252 steps taken: 12
 
-time taken: 0.006103218998759985 steps taken: 13
-time taken: 0.04107737701269798
+time taken: 0.003012054003193043 steps taken: 6
 
-time taken: 0.003868241998134181 steps taken: 8
-time taken: 0.015778486005729064
+time taken: 0.0039032569984556176 steps taken: 8
 
-time taken: 0.004981275997124612 steps taken: 10
-time taken: 0.014703179011121392
+time taken: 0.003958540997700766 steps taken: 8
 
-time taken: 0.002988248015753925 steps taken: 7
-time taken: 0.008154233015375212
+time taken: 0.006168948995764367 steps taken: 12
 
-time taken: 0.004737849987577647 steps taken: 10
-time taken: 0.03816673799883574
+time taken: 0.0038642629951937124 steps taken: 8
 
-time taken: 0.003818044002400711 steps taken: 7
-time taken: 0.00833342201076448
+time taken: 0.004818664005142637 steps taken: 10
+beginning fig1----- (25.686753223002597)
 
-time taken: 0.005786071997135878 steps taken: 11
-time taken: 0.01385134001611732
+beginning fig1----- (30.927902014998836)
 
-time taken: 0.0022342110169120133 steps taken: 4
-time taken: 0.0039989530050661415
+time taken: 0.010313290003978182 steps taken: 8
 
-time taken: 0.004049954004585743 steps taken: 9
-time taken: 0.01164248600252904
+beginning fig1----- (24.99115680700197)
 
-time taken: 0.006238025001948699 steps taken: 13
-time taken: 0.026829011010704562
+beginning fig1----- (24.62865549799608)
 
-time taken: 0.0042426169966347516 steps taken: 8
-time taken: 0.009722895018057898
+beginning fig1----- (27.719728404001216)
 
-time taken: 0.006227132980711758 steps taken: 13
-time taken: 0.06917653698474169
+time taken: 0.005905994999920949 steps taken: 8
 
-time taken: 0.006371724011842161 steps taken: 8
-time taken: 0.0165723409736529
+beginning fig1----- (26.98734361300012)
 
-end
+time taken: 0.02029196100193076 steps taken: 46
 
-beginning fig1----- (28.53997121800785)
+time taken: 0.012919619999593124 steps taken: 34
 
-time taken: 0.01080086300498806 steps taken: 21
-time taken: 0.13464439098606817
+time taken: 0.018249528991873376 steps taken: 42
 
-time taken: 0.012745763000566512 steps taken: 28
-time taken: 0.9948374929954298
+time taken: 0.012449734000256285 steps taken: 32
 
-time taken: 0.0021700220240745693 steps taken: 5
-time taken: 0.006447716994443908
+time taken: 0.004779975992278196 steps taken: 12
 
-time taken: 0.009712155995657668 steps taken: 21
-time taken: 0.07326723900041543
+time taken: 0.013366646991926245 steps taken: 32
 
-time taken: 0.010447957989526913 steps taken: 24
-time taken: 0.40114625997375697
+beginning fig1----- (26.73390444899269)
 
-time taken: 0.0030873669893480837 steps taken: 7
-time taken: 0.010692140000173822
+time taken: 0.018387549003819004 steps taken: 46
 
-time taken: 0.00918090099003166 steps taken: 21
-time taken: 0.05409117499948479
+time taken: 0.013732275008806027 steps taken: 34
 
-time taken: 0.01069740901584737 steps taken: 22
-time taken: 0.19109200598904863
+time taken: 0.0160315060056746 steps taken: 42
 
-time taken: 0.0041604860161896795 steps taken: 9
-time taken: 0.011590309004532173
+time taken: 0.012458709999918938 steps taken: 32
 
-time taken: 0.008253584994236007 steps taken: 18
-time taken: 0.03328461598721333
+time taken: 0.005071031991974451 steps taken: 12
 
-time taken: 0.00923466301173903 steps taken: 20
-time taken: 0.14373570997850038
+time taken: 0.013336509990040213 steps taken: 32
 
-time taken: 0.00501820701174438 steps taken: 11
-time taken: 0.01805660899844952
+time taken: 0.013115719993948005 steps taken: 34
 
-time taken: 0.005878190015209839 steps taken: 14
-time taken: 0.017053717019734904
+time taken: 0.017005913992761634 steps taken: 44
 
-time taken: 0.0071481089980807155 steps taken: 17
-time taken: 0.07067996100522578
+time taken: 0.010172934998990968 steps taken: 24
 
-time taken: 0.005575246992520988 steps taken: 13
-time taken: 0.03368990699527785
+time taken: 0.01039009699888993 steps taken: 26
 
-time taken: 0.006788559985579923 steps taken: 16
-time taken: 0.09023809700738639
+time taken: 0.012470892994315363 steps taken: 28
 
-time taken: 0.007008512009633705 steps taken: 15
-time taken: 0.06155388301704079
-
-time taken: 0.006811480998294428 steps taken: 15
-time taken: 0.0430567929870449
-
-time taken: 0.005910440988373011 steps taken: 14
-time taken: 0.048031448997789994
-
-time taken: 0.005586848012171686 steps taken: 13
-time taken: 0.03099084200221114
-
-end
-
-beginning fig1----- (2.0942839199851733)
-
-time taken: 0.003135586972348392 steps taken: 25
-time taken: 0.03749682099441998
-
-time taken: 0.0028906030056532472 steps taken: 20
-time taken: 0.025571479985956103
-
-time taken: 0.0009238960046786815 steps taken: 5
-time taken: 0.0018218090117443353
-
-time taken: 0.0014556910027749836 steps taken: 9
-time taken: 0.00204047400620766
-
-time taken: 0.0018591719854157418 steps taken: 14
-time taken: 0.002739763993304223
-
-time taken: 0.0021855069790035486 steps taken: 19
-time taken: 0.014290034014265984
-
-time taken: 0.0032270399970002472 steps taken: 27
-time taken: 0.06358530101715587
-
-time taken: 0.004609057999914512 steps taken: 22
-time taken: 0.02283603898831643
-
-time taken: 0.0011723139905370772 steps taken: 8
-time taken: 0.0016916959721129388
-
-time taken: 0.0017306260124314576 steps taken: 12
-time taken: 0.002675936004379764
-
-time taken: 0.0018046250042971224 steps taken: 15
-time taken: 0.0028804600005969405
-
-time taken: 0.0020961639820598066 steps taken: 18
-time taken: 0.006367190973833203
-
-time taken: 0.0027306010015308857 steps taken: 25
-time taken: 0.036532088997773826
-
-time taken: 0.0024826849985402077 steps taken: 21
-time taken: 0.02926004899200052
-
-time taken: 0.0011463749979157 steps taken: 6
-time taken: 0.0014591540093533695
-
-time taken: 0.0013987589918542653 steps taken: 9
-time taken: 0.002352487004827708
-
-time taken: 0.001769145019352436 steps taken: 13
-time taken: 0.002658498997334391
-
-time taken: 0.001981389010325074 steps taken: 18
-time taken: 0.012926108989631757
-
-time taken: 0.003062602976569906 steps taken: 27
-time taken: 0.06330067600356415
-
-time taken: 0.0039653999847359955 steps taken: 22
-time taken: 0.02345522999530658
-
-end
-
-beginning fig1----- (1.7553963829996064)
-
-time taken: 0.0010699109989218414 steps taken: 5
-time taken: 0.008142657985445112
-
-time taken: 0.0009305159910582006 steps taken: 4
-time taken: 0.003415243001654744
-
-time taken: 0.0009741209796629846 steps taken: 5
-time taken: 0.0037229300069157034
-
-time taken: 0.001027994992909953 steps taken: 5
-time taken: 0.0036159860028419644
-
-time taken: 0.0007339889998547733 steps taken: 4
-time taken: 0.0021043900051154196
-
-time taken: 0.0005677959998138249 steps taken: 3
-time taken: 0.0010316620173398405
-
-time taken: 0.0009922509780153632 steps taken: 5
-time taken: 0.0038561419933103025
-
-time taken: 0.000872521020937711 steps taken: 4
-time taken: 0.003282585006672889
-
-time taken: 0.0007943009841255844 steps taken: 5
-time taken: 0.004065151006216183
-
-time taken: 0.0007385660137515515 steps taken: 4
-time taken: 0.0033661180059425533
-
-time taken: 0.0010694469965528697 steps taken: 6
-time taken: 0.005154021986527368
-
-time taken: 0.0009824270091485232 steps taken: 5
-time taken: 0.004651805997127667
-
-time taken: 0.0009660669893492013 steps taken: 4
-time taken: 0.002885207999497652
-
-time taken: 0.000785007985541597 steps taken: 5
-time taken: 0.004802055016625673
-
-time taken: 0.000673884991556406 steps taken: 3
-time taken: 0.0009964450146071613
-
-time taken: 0.0009263410174753517 steps taken: 4
-time taken: 0.0028435109998099506
-
-time taken: 0.0010099189821630716 steps taken: 5
-time taken: 0.003496085002552718
-
-time taken: 0.000778393994551152 steps taken: 5
-time taken: 0.00335641298443079
-
-time taken: 0.0007089870050549507 steps taken: 4
-time taken: 0.0014951179909985512
-
-time taken: 0.0008417189819738269 steps taken: 5
-time taken: 0.003442963003180921
-
-time taken: 0.0009455820254515857 steps taken: 6
-time taken: 0.01029321801615879
-
-end
-
-beginning fig1----- (2.203871524980059)
-
-time taken: 0.00214648901601322 steps taken: 11
-time taken: 0.01561600700370036
-
-time taken: 0.0016035449807532132 steps taken: 10
-time taken: 0.008784374018432572
-
-time taken: 0.0021035289973951876 steps taken: 9
-time taken: 0.003972670994699001
-
-time taken: 0.0035676039988175035 steps taken: 27
-time taken: 0.6145709029806312
-
-time taken: 0.0029592039936687797 steps taken: 22
-time taken: 0.47564883998711593
-
-time taken: 0.0026463799877092242 steps taken: 19
-time taken: 0.06334626500029117
-
-time taken: 0.0025699489924591035 steps taken: 19
-time taken: 0.11055978201329708
-
-time taken: 0.0021098220022395253 steps taken: 14
-time taken: 0.07431928400183097
-
-time taken: 0.0035057530039921403 steps taken: 25
-time taken: 0.17228131901356392
-
-time taken: 0.0014685679925605655 steps taken: 8
-time taken: 0.0039866559964139014
-
-time taken: 0.00518286699661985 steps taken: 28
-time taken: 0.3852512290177401
-
-time taken: 0.003361676004715264 steps taken: 23
-time taken: 0.2858114689879585
-
-time taken: 0.002877008984796703 steps taken: 20
-time taken: 0.09133417598786764
-
-time taken: 0.0024824669817462564 steps taken: 17
-time taken: 0.0634708100114949
-
-time taken: 0.002265159011585638 steps taken: 15
-time taken: 0.06902224599616602
-
-time taken: 0.0016966239782050252 steps taken: 12
-time taken: 0.013910602981923148
-
-time taken: 0.0015939139993861318 steps taken: 9
-time taken: 0.006192291009938344
-
-time taken: 0.0012561199837364256 steps taken: 9
-time taken: 0.004359677986940369
-
-time taken: 0.0034004580229520798 steps taken: 26
-time taken: 0.26710649399319664
-
-time taken: 0.002847847994416952 steps taken: 21
-time taken: 0.08124988299096003
-
-time taken: 0.0025165499828290194 steps taken: 18
-time taken: 0.13563930400414392
-
-end
-
-beginning fig1----- (0.04222696300712414)
+time taken: 0.005906117003178224 steps taken: 12
 

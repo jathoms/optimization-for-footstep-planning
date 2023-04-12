@@ -1,7 +1,7 @@
 Gurobi Optimizer version 9.5.2 build v9.5.2rc0 (mac64[x86])
 Thread count: 4 physical cores, 8 logical processors, using up to 8 threads
 Optimize a model with 20057 rows, 12604 columns and 42592 nonzeros
-Model fingerprint: 0x91de5959
+Model fingerprint: 0x856cc9a4
 Model has 45 quadratic constraints
 Variable types: 10120 continuous, 2484 integer (2484 binary)
 Coefficient statistics:
@@ -11,60 +11,62 @@ Coefficient statistics:
   Bounds range     [1e+00, 1e+00]
   RHS range        [1e-01, 1e+03]
   QRHS range       [4e-01, 4e-01]
-Presolve removed 19818 rows and 12049 columns
-Presolve time: 0.15s
-Presolved: 239 rows, 555 columns, 2402 nonzeros
+Presolve removed 19819 rows and 12054 columns
+Presolve time: 0.14s
+Presolved: 238 rows, 550 columns, 2373 nonzeros
 Presolved model has 43 quadratic constraint(s)
-Variable types: 119 continuous, 436 integer (436 binary)
+Variable types: 119 continuous, 431 integer (431 binary)
 
-Root relaxation: objective 0.000000e+00, 130 iterations, 0.00 seconds (0.00 work units)
+Root relaxation: objective 0.000000e+00, 128 iterations, 0.00 seconds (0.00 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
 
-     0     0    0.00000    0   26          -    0.00000      -     -    0s
-     0     0    0.00000    0   41          -    0.00000      -     -    0s
-     0     0    0.00000    0   41          -    0.00000      -     -    0s
-     0     0    0.00000    0   11          -    0.00000      -     -    0s
+     0     0    0.00000    0   28          -    0.00000      -     -    0s
+     0     0    0.00000    0   79          -    0.00000      -     -    0s
+     0     0    0.00000    0   77          -    0.00000      -     -    0s
+     0     0    0.00000    0   16          -    0.00000      -     -    0s
+     0     0    0.00000    0   29          -    0.00000      -     -    0s
      0     0    0.00000    0   17          -    0.00000      -     -    0s
-     0     0    0.00000    0    4          -    0.00000      -     -    0s
-     0     0    0.00000    0   26          -    0.00000      -     -    0s
-     0     0    0.00000    0    6          -    0.00000      -     -    0s
-     0     0    0.00000    0    4          -    0.00000      -     -    0s
-     0     0    0.00000    0    8          -    0.00000      -     -    0s
-     0     0    0.00000    0    8          -    0.00000      -     -    0s
-     0     0    0.00000    0    8          -    0.00000      -     -    0s
-     0     0    0.00000    0    8          -    0.00000      -     -    0s
-     0     0    0.00000    0    8          -    0.00000      -     -    0s
-     0     0    0.00000    0    1          -    0.00000      -     -    0s
      0     0    0.00000    0   19          -    0.00000      -     -    0s
-     0     0    0.00000    0   17          -    0.00000      -     -    0s
      0     0    0.00000    0    4          -    0.00000      -     -    0s
+     0     0    0.00000    0    8          -    0.00000      -     -    0s
+     0     0    0.00000    0    9          -    0.00000      -     -    0s
+     0     0    0.00000    0   14          -    0.00000      -     -    0s
      0     0    0.00000    0    4          -    0.00000      -     -    0s
-     0     0    0.00000    0    2          -    0.00000      -     -    0s
-     0     0    0.00000    0    2          -    0.00000      -     -    0s
-     0     0    0.00000    0    2          -    0.00000      -     -    0s
-     0     0    0.00000    0    2          -    0.00000      -     -    0s
-     0     0    0.00000    0    2          -    0.00000      -     -    0s
-     0     2    0.00000    0    2          -    0.00000      -     -    0s
-H  105     6                       0.0000000    0.00000  0.00%  21.8    0s
-*  105     6              15       0.0000000    0.00000  0.00%  21.9    0s
+     0     0    0.00000    0    8          -    0.00000      -     -    0s
+     0     0    0.00000    0    8          -    0.00000      -     -    0s
+     0     0    0.00000    0   10          -    0.00000      -     -    0s
+     0     0    0.00000    0    4          -    0.00000      -     -    0s
+     0     0    0.00000    0    5          -    0.00000      -     -    0s
+     0     0    0.00000    0    9          -    0.00000      -     -    0s
+     0     0    0.00000    0   13          -    0.00000      -     -    0s
+     0     0    0.00000    0    7          -    0.00000      -     -    0s
+     0     0    0.00000    0    8          -    0.00000      -     -    0s
+     0     0    0.00000    0    7          -    0.00000      -     -    0s
+     0     0    0.00000    0    7          -    0.00000      -     -    0s
+     0     2    0.00000    0    7          -    0.00000      -     -    0s
+H  172    38                       0.0000000    0.00000  0.00%  14.0    0s
+*  172    38              22       0.0000000    0.00000  0.00%  14.0    0s
 
 Cutting planes:
-  Gomory: 2
-  Cover: 28
-  Implied bound: 11
-  Clique: 26
-  MIR: 15
-  StrongCG: 3
-  GUB cover: 4
+  Gomory: 4
+  Cover: 63
+  Implied bound: 3
+  Clique: 19
+  MIR: 17
+  StrongCG: 9
+  GUB cover: 22
+  Inf proof: 2
+  RLT: 1
   Relax-and-lift: 2
 
-Explored 144 nodes (6456 simplex iterations) in 0.42 seconds (0.29 work units)
+Explored 189 nodes (7970 simplex iterations) in 0.43 seconds (0.29 work units)
 Thread count was 8 (of 8 available processors)
 
 Solution count 1: 0 
 
 Optimal solution found (tolerance 1.00e-04)
 Best objective 0.000000000000e+00, best bound 0.000000000000e+00, gap 0.0000%
-time taken: 0.4303750079998281
+46 steps taken.
+189.0  nodes traversed.

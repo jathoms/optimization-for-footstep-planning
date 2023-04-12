@@ -282,7 +282,7 @@ test_cases["Fig_5"] = np.array([[15.775, 0.95],
 no_steps["Fig_6"] = 1
 step_dist["Fig_6"] = 1
 
-env = "Fig_1"
+env = "Fig_3"
 
 
 if env == "Fig_6":
@@ -291,22 +291,22 @@ if env == "Fig_6":
 elif env == "Fig_5":
     region_centers = test_cases[env]
     hulls = [createSquare(center, 0.3) for center in region_centers]
-else:
-    region_centers = test_cases[env]
-    hulls = [createSquare(center, 0.3) for center in region_centers]
+# else:
+    # region_centers = test_cases[env]
+    # hulls = [createSquare(center, 0.3) for center in region_centers]
 
-
-env_filename = env + "_log_testin.txt"
+    # env_filename = env + "_log_testin.txt"
 model = gp.Model('optimizer')
-model.Params.LogFile = env_filename
-open(env_filename, "w").write("")
+# model.Params.LogFile = env_filename
+# open(env_filename, "w").write("")
 
-if env != "Fig_6":
-    biped.get_constraints(
-        model, hulls, start=region_centers[0], end=region_centers[-1], no_regions=len(region_centers), steps_taken=no_steps[env], reachable_distance=step_dist[env], logfile=env_filename)
-else:
-    biped.get_constraints(model, hulls, start=np.array([0, 0]), end=np.array([
-                          0, 10]), no_regions=1, steps_taken=no_steps[env], reachable_distance=step_dist[env], logfile=env_filename)
+# if env != "Fig_6":
+#     biped.get_constraints(
+#         model, hulls, start=region_centers[0], end=region_centers[-1], no_regions=len(region_centers), steps_taken=no_steps[env], reachable_distance=step_dist[env], logfile=env_filename)
+# else:
+#     biped.get_constraints(model, hulls, start=np.array([0, 0]), end=np.array([
+#                           0, 10]), no_regions=1, steps_taken=no_steps[env], reachable_distance=step_dist[env], logfile=env_filename)
 
+biped.get_constraints(model)
 plt.axis('scaled')
 plt.show()

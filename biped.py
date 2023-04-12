@@ -7,10 +7,12 @@ from graph_construction import linearise_reachable_region
 import io
 import sys
 from time import perf_counter
+from OO_graph_objects import plot_hull
 
-m = 16  # number of wanted regions (default)
+m = 25  # number of wanted regions (default)
 n = 2  # dimension of space
 steps = 1  # default number of steps in solution
+# left is used for most things except the first example in section 3.3 of paper.
 first_foot_forward = 'left'
 min_foot_separation_h = 0.1
 default_dist = 0.6
@@ -19,7 +21,7 @@ default_dist = 0.6
 rng = np.random.default_rng(seed=70)
 # m * 50 random points in n-D
 
-points = 5 * rng.random((100 * m, n))
+points = 5 * rng.random((10*m, n))
 kmeans = cluster.KMeans(n_clusters=m)
 label = kmeans.fit_predict(points)
 u_labels = np.unique(label)
@@ -96,12 +98,12 @@ def get_constraints(model: gp.Model,
     model.optimize()
     time_taken = perf_counter() - t1
     print('time taken:',  time_taken, file=open(logfile, "a"))
+    return
     # for i in range(steps_taken):  # print matrix
     #     print(i, end="\t")
     #     for j in range(no_regions):
     #         print(int(active[i, j].X), end=' ')
     #     print('\n', end="")
-    return
     print(steps_taken, "steps taken.")
     print(model.NodeCount, " nodes traversed.")
     sys.stdout = sys.__stdout__
@@ -129,6 +131,8 @@ def get_constraints(model: gp.Model,
             open(logfile, "w").writelines(output)
             for idx, point in enumerate(contact_points_vector):
                 x, y = point.X[0], point.X[1]
+                for hull in all_hulls:
+                    plot_hull(hull)
                 # plot footstep positions and linearised version of reachable region from each step
                 if idx <= steps_taken-1:
                     pass
@@ -153,6 +157,7 @@ def get_constraints(model: gp.Model,
                      alpha=0.5)
             plt.plot(start[0], start[1], marker="o", markersize=6, markeredgecolor="green", markerfacecolor="green",
                      alpha=0.5)
+            plt.axis('scaled')
             print("Start Point:", start, "\nEnd Point:", end)
             print(
                 f"Near optimal with {steps_taken} steps (within {int(steps_taken - (steps_taken*decrease_amount))} steps)")
@@ -168,12 +173,3 @@ def get_constraints(model: gp.Model,
             else:
                 return model.Status
     return -1
-
-
-def plot_hull(hull):
-    plt.axes()
-    for idx, hull in enumerate(hulls):
-        vertices_ = hull.points
-        for simplex in hull.simplices:
-            plt.plot(vertices_[simplex, 0], vertices_[simplex, 1], 'k-')
-    return

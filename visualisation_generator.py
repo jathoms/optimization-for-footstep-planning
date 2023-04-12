@@ -87,11 +87,11 @@ def volume_proportion_check(n):
     plt.show()
 
 
-def gen_circ():
-    n = 10000
+def gen_circ(x, y):
+    n = 1000
     angles = [m*2*math.pi/n for m in range(0, n)]
-    xs = [math.cos(th) for th in angles]
-    ys = [math.sin(th) for th in angles]
+    xs = [math.cos(th) + x for th in angles]
+    ys = [math.sin(th) + y for th in angles]
     return ConvexHull(np.array(list(zip(xs, ys))))
 
 
@@ -210,19 +210,34 @@ def gen_regions():
         print(initial_points[c.vertices, :])
         print('mean:', np.mean(initial_points[c.vertices, :], axis=0))
 
-        plt.plot(centroid[0], centroid[1], "x", color='red')
+        # plt.plot(centroid[0], centroid[1], "x", color='red')
 
-        plot_hull(c, color="brown")
         fp = []
-        for point in initial_points:
+        vs = []
+        vertices = [c.points[v] for v in c.vertices]
+
+        for point in vertices:
+
             hull = g.linearise_reachable_region(1, 6, point)
+
+            vs.append(hull)
+
             fp.extend(hull.points)
             # plot_hull(hull, color="blue", alpha=0.5)
 
         fh = ConvexHull(fp)
+
+        plot_hull(c, color="brown")
+        for v in vs:
+            plot_hull(v, color='blue', alpha=0)
+        plt.axis('equal')
+        plt.show()
+        plot_hull(c, color="brown")
+        for v in vs:
+            plot_hull(v, color='blue', alpha=0.5)
+
         plot_hull(fh, color="blue")
 
-        plt.grid(True)
         plt.axis('equal')
         plt.show()
 
@@ -527,9 +542,200 @@ def graphs_6():
     plt.show()
 
 
-graphs_1()
-graphs_2()
-graphs_3()
-graphs_4()
-graphs_5()
-graphs_6()
+def get_results():
+    graphs_1()
+    graphs_2()
+    graphs_3()
+    graphs_4()
+    graphs_5()
+    graphs_6()
+
+
+def gen_reachable_region_no_obstacles():
+    pos = np.array([0, 0])
+    foot = 'left'
+    root = RootNodePoint(pos, None, 'left')
+    vision = root.hull.vision
+    vision2 = HullSection(vision, vision.points, 'right').vision
+    vision3 = HullSection(vision2, vision2.points, 'left').vision
+    plt.plot(pos[0], pos[1],  'o', color='red')
+    plot_hull(vision, color='cyan')
+    plt.axis('equal')
+    plt.show()
+
+    plt.plot(pos[0], pos[1],  'o', color='red')
+    plot_hull(vision, color='cyan')
+    plot_hull(vision2, color='blue')
+    plt.axis('equal')
+    plt.show()
+
+    plt.plot(pos[0], pos[1],  'o', color='red')
+    plot_hull(vision, color='cyan')
+    plot_hull(vision2, color='blue')
+    plot_hull(vision3, color='orange')
+    plt.axis('equal')
+    plt.show()
+
+    gr = nx.Graph()
+
+    r, a, b, c = object(), object(), object(), object()
+    gr.add_node(r, color='red')
+    gr.add_node(a, color='cyan')
+    gr.add_node(b, color='blue')
+    gr.add_node(c, color="orange")
+    gr.add_edge(r, a)
+    gr.add_edge(a, b)
+    gr.add_edge(b, c)
+    pos = hierarchy_pos(gr, r)
+    nx.draw(gr, pos=pos, node_color=[
+            'red', "cyan", 'blue', 'orange'], width=3)
+    plt.show()
+
+
+def real_reachable():
+    plot_hull(gen_circ(0.25, 0.75))
+    plt.plot(0.25, 0.75, 'o', color='blue')
+    plot_hull(gen_circ(0, 0))
+    plt.plot(0, 0, 'o', color='red')
+    plt.axis('scaled')
+    plt.grid(True)
+    plt.show()
+
+
+def outgraph_1():
+    graph_times = np.array([0.010425646003568545,
+                            0.010877319989958778,
+                            0.009811316995183006,
+                            0.01009184299618937,
+                            0.01046486799896229,
+                            0.009356084003229626,
+                            0.01032285600376781,
+                            0.010212685985607095,
+                            0.01035013199725654,
+                            0.008681678998982534,
+                            0.01014482400205452])
+
+    mip_times = [0.18206973500491586,
+                 0.14544738600670826,
+                 0.13044313499995042,
+                 0.0817996160039911,
+                 0.14052225700288545,
+                 0.06839976100309286,
+                 0.10184764199948404,
+                 0.09165056500933133,
+                 0.09970478300238028,
+                 0.06129235499247443,
+                 0.09639761000289582]
+
+    graph_constr_times = np.array([20.872081996989436,
+                                   11.500980236000032,
+                                   11.180253978993278,
+                                   13.88445261499146,
+                                   19.42501148300653,
+                                   5.356781466005486,
+                                   16.584159694000846,
+                                   15.991557763001765,
+                                   8.721646217003581,
+                                   0.6461477310076589,
+                                   16.90014911298931])
+
+    steps = [27,
+             25,
+             25,
+             25,
+             26,
+             23,
+             25,
+             25,
+             24,
+             21,
+             25]
+    plt.scatter(steps, graph_times + graph_constr_times,
+                color='blue', label='Graph-assisted MIP + Graph construction')
+    plt.scatter(steps, graph_times,
+                color='blue', label='Graph-assisted MIP', alpha=0.2)
+    plt.scatter(steps, mip_times,
+                color='red', label='Pure MIP')
+    plt.xlabel('Steps Taken')
+    plt.ylabel('Time Taken')
+    plt.grid(True)
+    plt.yscale('log')
+
+    ax = plt.gca()
+
+    ax.set_xticks(range(int(min(steps)),
+                  int(max(steps)) + 1))
+    plt.legend()
+    plt.show()
+
+
+def outgraph_2():
+    graph_times = np.array([0.014184649000526406,
+                            0.015967302009812556,
+                            0.015642616010154597,
+                            0.013785037997877225,
+                            0.015958442992996424,
+                            0.014592521998565644,
+                            0.01580082401051186,
+                            0.014110919000813738,
+                            0.016312908002873883,
+                            0.015341855003498495,
+                            0.015143148004426621])
+
+    mip_times = np.array([9.109521751001012,
+                          8.065509514999576,
+                          8.849800518000848,
+                          1.7515880279970588,
+                          32.639139980004984,
+                          3.8946058149886085,
+                          7.9368560160073685,
+                          8.797917593998136,
+                          32.700322353994125,
+                          3.659158780996222,
+                          1.7626120150089264])
+
+    graph_constr_times = np.array([0.1703389070025878,
+                                   3.7339233649981907,
+                                   0.17005301400786266,
+                                   0.16250314899662044,
+                                   3.815366978000384,
+                                   2.4706615879986202,
+                                   3.7328522500029067,
+                                   0.18005762000393588,
+                                   3.786458586997469,
+                                   2.462744885007851,
+                                   0.17047575701144524])
+
+    steps = [34,
+             36,
+             34,
+             33,
+             37,
+             35,
+             36,
+             34,
+             37,
+             35,
+             33]
+
+    plt.scatter(steps, graph_times + graph_constr_times,
+                color='blue', label='Graph-assisted MIP + Graph construction')
+    plt.scatter(steps, graph_times,
+                color='blue', label='Graph-assisted MIP', alpha=0.2)
+    plt.scatter(steps, mip_times,
+                color='red', label='Pure MIP')
+    plt.xlabel('Steps Taken')
+    plt.ylabel('Time Taken')
+    plt.grid(True)
+    plt.yscale('log')
+
+    ax = plt.gca()
+
+    ax.set_xticks(range(int(min(steps)),
+                  int(max(steps)) + 1))
+    plt.legend()
+    plt.show()
+
+
+outgraph_1()
+outgraph_2()

@@ -13,9 +13,10 @@ import networkx as nx
 walkable_regions = []
 check_for_redundant_regions = True
 plot = False
+plot_graph = False
 regionparentmap = {}
 
-config = [1.8, 16, "left", 0.1]
+config = [0.6, 16, "left", 0.1]
 
 [reachable_distance, no_points, default_foot, offset] = config
 
@@ -479,6 +480,12 @@ def search(world, start, end, config, reverse=False):
             initial_section)
     current = root.children
 
+    if check_for_redundant_regions:
+        if foot == "left":
+            explored_walkable_regions_left.extend(initial_sections)
+        elif region.hull.foot_in == "right":
+            explored_walkable_regions_right.extend(initial_sections)
+
     while True:
 
         print(f"spawned {len(current)} children")
@@ -510,10 +517,11 @@ def search(world, start, end, config, reverse=False):
         print("taking step", step)
         for region in current:
             if region.hull.contains(end):
-                if plot:
+                if plot or plot_graph:
                     plt.axis("scaled")
                     plt.show()
-                    draw_graph(root, region, True)
+                    path = draw_graph(root, region, True)
+
                 print("acquired")
                 return root, region
         new = []
@@ -593,6 +601,8 @@ def draw_graph(root: HullNode, end=None, highlight_path=False):
     #     "#FF0000" if node.depth == 0 or node.depth == steps + 1 else "#000000" for node in gr], node_size=15)
     plt.show()
 
+    return path
+
 
 def fill_graph_from_root(root):
 
@@ -636,6 +646,11 @@ def create_new_graph_in_search_of_other_graph(world, start_point, start_hull: Co
         root.add_child_from_hullsection_intersection_with_world(
             initial_section)
     current = root.children
+    if check_for_redundant_regions:
+        if foot == "left":
+            explored_walkable_regions_left.extend(initial_sections)
+        elif foot == "right":
+            explored_walkable_regions_right.extend(initial_sections)
 
     while True:
 
@@ -675,12 +690,13 @@ def create_new_graph_in_search_of_other_graph(world, start_point, start_hull: Co
                     if plot:
                         for env_region in world:
                             plot_hull(env_region)
+                        plot_hull(region.hull, color='#00B2B2')
                         plot_hull(node.hull, color='red')
                         plot_hull(region.hull.vision, color='cyan')
                         plot_hull(intersection, color='blue')
                         plt.axis("scaled")
-                        plt.show()
-                        draw_graph(root, intersection, True)
+                        # plt.show()
+                        # draw_graph(root, intersection, True)
                     print("acquired")
                     return root, new_node, node  # root new, leaf new, node old
         new = []

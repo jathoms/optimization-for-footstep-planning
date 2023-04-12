@@ -11,30 +11,30 @@ import random
 
 reverse_search = True
 plot = False
-fig6 = True
+fig6 = False
 
 
 class GException(Exception):
     pass
 
 
-env = np.array([[14.25, 14.6],  # 1.8 spiral?
-                [16.15, 14.95],
-                [18.45, 14.95],
-                [20.19, 15.41],
-                [20.25, 14],
-                [21.55, 11.9],
-                [21.35, 10.05],
-                [21.81, 13.37],
-                [20.15, 8.9],
-                [18.5, 8.3],
-                [17.05, 8.35],
-                [17.3, 15.8],
-                [15.95, 8.85],
-                [14.85, 10.1],
-                [14.7, 11.65],
-                [17.0, 11.65],
-                [18.7, 11.65], ])
+# env = np.array([[14.25, 14.6],  # 1.8 spiral?
+#                 [16.15, 14.95],
+#                 [18.45, 14.95],
+#                 [20.19, 15.41],
+#                 [20.25, 14],
+#                 [21.55, 11.9],
+#                 [21.35, 10.05],
+#                 [21.81, 13.37],
+#                 [20.15, 8.9],
+#                 [18.5, 8.3],
+#                 [17.05, 8.35],
+#                 [17.3, 15.8],
+#                 [15.95, 8.85],
+#                 [14.85, 10.1],
+#                 [14.7, 11.65],
+#                 [17.0, 11.65],
+#                 [18.7, 11.65], ])
 
 
 # env = np.array([[17.325, 12.7],  # fu
@@ -383,60 +383,60 @@ env = np.array([[14.25, 14.6],  # 1.8 spiral?
 #                 [20.4, 12.05],
 #                 [19.5, 12.5]])
 
-# env = np.array([[18.8, 1.7],  # 0.6
-#                 [18.8, 3.4],
-#                 [18.85, 5.55],
-#                 [18.65, 8.15],
-#                 [19.55, 3.25],
-#                 [20.4, 4],
-#                 [21.15, 4.65],
-#                 [21.65, 5.45],
-#                 [21.8, 6.3],
-#                 [21.8, 7.65],
-#                 [21.8, 8.55],
-#                 [19.75, 6.05],
-#                 [19.9, 6.5],
-#                 [20.1, 7.25],
-#                 [20.2, 8],
-#                 [18.2, 5.45],
-#                 [17.85, 5.85],
-#                 [17.85, 6.4],
-#                 [17.5, 7.65],
-#                 [17.6, 3.7],
-#                 [16.2, 4.25],
-#                 [16.1, 6.1],
-#                 [16, 7.15],
-#                 [16.05, 5.25],
-#                 [15.95, 7.85],
-#                 [15.55, 8.9],
-#                 [16.2, 10.1],
-#                 [16.65, 11.2],
-#                 [21.95, 9.35],
-#                 [22.25, 9.75],
-#                 [23.2, 10.7],
-#                 [24.2, 11.45],
-#                 [19.3, 9.25],
-#                 [19.45, 10.5],
-#                 [18.6, 4.4],
-#                 [18.75, 2.65],
-#                 [24.1, 12.4],
-#                 [23.2, 13.3],
-#                 [22.55, 13.7],
-#                 [17.05, 11.8],
-#                 [17.65, 12],
-#                 [18.2, 12.05],
-#                 [19.05, 12.7],
-#                 [19.95, 13.3],
-#                 [19.85, 11.5],
-#                 [20.2, 12.35],
-#                 [20.95, 8],
-#                 [21.15, 6.25],
-#                 [20.95, 7],
-#                 [21.85, 10.55],
-#                 [21.9, 11.3],
-#                 [22.05, 12.2],
-#                 [20.15, 9.1],
-#                 [22.8, 14.65]])
+env = np.array([[18.8, 1.7],  # 0.6
+                [18.8, 3.4],
+                [18.85, 5.55],
+                [18.65, 8.15],
+                [19.55, 3.25],
+                [20.4, 4],
+                [21.15, 4.65],
+                [21.65, 5.45],
+                [21.8, 6.3],
+                [21.8, 7.65],
+                [21.8, 8.55],
+                [19.75, 6.05],
+                [19.9, 6.5],
+                [20.1, 7.25],
+                [20.2, 8],
+                [18.2, 5.45],
+                [17.85, 5.85],
+                [17.85, 6.4],
+                [17.5, 7.65],
+                [17.6, 3.7],
+                [16.2, 4.25],
+                [16.1, 6.1],
+                [16, 7.15],
+                [16.05, 5.25],
+                [15.95, 7.85],
+                [15.55, 8.9],
+                [16.2, 10.1],
+                [16.65, 11.2],
+                [21.95, 9.35],
+                [22.25, 9.75],
+                [23.2, 10.7],
+                [24.2, 11.45],
+                [19.3, 9.25],
+                [19.45, 10.5],
+                [18.6, 4.4],
+                [18.75, 2.65],
+                [24.1, 12.4],
+                [23.2, 13.3],
+                [22.55, 13.7],
+                [17.05, 11.8],
+                [17.65, 12],
+                [18.2, 12.05],
+                [19.05, 12.7],
+                [19.95, 13.3],
+                [19.85, 11.5],
+                [20.2, 12.35],
+                [20.95, 8],
+                [21.15, 6.25],
+                [20.95, 7],
+                [21.85, 10.55],
+                [21.9, 11.3],
+                [22.05, 12.2],
+                [20.15, 9.1],
+                [22.8, 14.65]])
 
 # env = np.array([[15.775, 0.95],  # fig 5, 1.8
 #                 [14.625, 2.05],
@@ -519,6 +519,7 @@ def fast_traverse_no_change(root: HullNode, end: HullNode):
 
 
 def fast_traverse_no_change_backwards(root: RootNodePoint, end: HullNode):
+    t1 = perf_counter()
     nodes_traversed = 0
     path = deque([])
     while not isinstance(end, RootNodePoint):
@@ -527,6 +528,7 @@ def fast_traverse_no_change_backwards(root: RootNodePoint, end: HullNode):
         nodes_traversed += 1
     path.append(root)
     # print(f'fast traverse in {nodes_traversed}')
+    print(perf_counter() - t1, "seconds for up-traverse")
     return path
 
 
@@ -690,7 +692,7 @@ def run_mip_with_graph(root, end, foot=foot):
         steporder = fast_traverse_no_change(root, end)
     steps = len(steporder)
 
-    # plot_path(steporder)
+    plot_path_nonparent(steporder, startpos, endpos)
 
     start_foot = foot if (not reverse_search or steps % 2 == 1) else (
         "left" if foot == "right" else "right")
@@ -731,6 +733,8 @@ def replan_mip_with_graph(model: gp.Model, node: HullNode, root: RootNodePoint, 
     else:
         steporder = fast_traverse_no_change(root, node)
     steps = len(steporder)
+    if plot:
+        plot_path_nonparent(steporder, new_startpos, endpos)
 
     model = gp.Model()
 
@@ -740,7 +744,7 @@ def replan_mip_with_graph(model: gp.Model, node: HullNode, root: RootNodePoint, 
     contact_points = mip.get_footstep_positions(
         model, world, new_startpos, endpos, offset, reachable_distance, steporder, region_id_dict, foot, logfile)
 
-    print("contacts:", contact_points)
+    # print("contacts:", contact_points)
 
     if plot:
         for region in world:
@@ -781,6 +785,31 @@ def plot_path(steporder):
         plot_hull(step.hull.parent_hull, color='blue')
         plt.axis('scaled')
         plt.show()
+
+
+def plot_path_nonparent(steporder, startpos, endpos):
+    for reg in world:
+        plot_hull(reg)
+    for h in steporder:
+        plot_hull(h.hull, color='#00B2B2')
+    for i in range(len(steporder)-2):
+
+        step1 = steporder[i]
+        step2 = steporder[i+1]
+        if isinstance(step1, RootNodePoint):
+            c1 = step1.pos
+        else:
+            c1 = centroid(step1)
+        if isinstance(step2, RootNodePoint):
+            c2 = step2.pos
+        else:
+            c2 = centroid(step2)
+        plt.plot([c1[0], c2[0]], [c1[1], c2[1]], ':', color="black")
+    plt.plot([c2[0], endpos[0]], [c2[1], endpos[1]], ':', color="black")
+    plt.plot(startpos[0], startpos[1], 'o', color='green')
+    plt.plot(endpos[0], endpos[1], 'o', color='red')
+    plt.axis('scaled')
+    plt.show()
 
 
 def build_graph(root):
@@ -855,6 +884,9 @@ def replan_from_out(model, new_pos, new_region: ConvexHull, foot, root_of_old, o
     steporder_to_mid = fast_traverse_no_change(
         root_node_of_new_graph, intersection)
 
+    if plot:
+        plot_path_nonparent(steporder_to_mid, new_pos, centroid(intersection))
+
     intersection.parent = leaf_node_of_old_graph.parent
 
     steporder_from_mid_to_end = fast_traverse_no_change_backwards(
@@ -866,14 +898,16 @@ def replan_from_out(model, new_pos, new_region: ConvexHull, foot, root_of_old, o
 
     # plot_path(steporder)
 
-    print('feet:', leaf_node_of_old_graph.hull.foot_in, intersection.hull.foot_in)
+    # print('feet:', leaf_node_of_old_graph.hull.foot_in, intersection.hull.foot_in)
 
     new_model = gp.Model()
 
+    new_model.Params.OutputFlag = 0
+
     contact_points = mip.get_footstep_positions(
         new_model, world, new_pos, endpos, offset, reachable_distance, steporder, region_id_dict, foot, logfile)
-
-    plot_steps(contact_points, new_pos, endpos, foot, len(steporder))
+    if plot:
+        plot_steps(contact_points, new_pos, endpos, foot, len(steporder))
 
     # steps_from_start = replan_mip_with_graph(
     #     model, intersection, root_node_of_new_graph, foot, new_pos, centroid(intersection), False)
@@ -931,7 +965,7 @@ def gen_data_unexpected_in_graph():
     logfile = 'compare.txt'
     print(f"beginning fig1----- ({constr_time})\n",
           file=open(logfile, 'a'))
-    for i in range(5, 26):
+    for i in range(0, 26):  # was 5,26
         try:
             new_idx = (i * 378467) % (len(env)-2)
             new_pos = env[new_idx]
@@ -939,6 +973,7 @@ def gen_data_unexpected_in_graph():
             print(new_pos)
 
             next_step_foot = "right" if (i * 10039) % 11 >= 6 else "left"
+            next_step_foot = 'right'
             # print(new_idx, new_pos, endpos, next_step)
 
             no_steps = replan(model, new_pos, next_step_foot,
@@ -946,8 +981,8 @@ def gen_data_unexpected_in_graph():
 
             new_model = gp.Model()
 
-            biped.get_constraints(
-                new_model, world, start=new_pos, end=endpos, no_regions=len(world), steps_taken=no_steps, reachable_distance=reachable_distance, logfile=logfile, foot=next_step_foot)
+            # biped.get_constraints(
+            #     new_model, world, start=new_pos, end=endpos, no_regions=len(world), steps_taken=no_steps, reachable_distance=reachable_distance, logfile=logfile, foot=next_step_foot)
 
             print("", file=open(logfile, 'a'))
 
@@ -996,16 +1031,14 @@ def results_unexpected_fig6():
 
 def results_unexpected_outgraph():
     logfile = 'compare4.txt'
-    print(f"beginning fig1 out of graph----- ({constr_time})\n",
+    print(f"beginning fig5 out of graph----- ({constr_time})\n",
           file=open(logfile, 'a'))
-    for i in range(5, 56):
+    for i in range(5, 5600):
         try:
             new_idx = (i * 378467) % (len(env)-2)
             new_pos = env[new_idx]
 
             new_region = world[new_idx]
-
-            print(new_pos)
 
             next_step = "right" if (i * 10039) % 11 >= 6 else "left"
             # print(new_idx, new_pos, endpos, next_step)
@@ -1014,6 +1047,8 @@ def results_unexpected_outgraph():
 
             no_steps = replan_from_out(
                 model, new_pos, new_region, next_step, root, gr, logfile)
+
+            print(new_pos)
 
             new_model = gp.Model()
 
@@ -1025,6 +1060,39 @@ def results_unexpected_outgraph():
             # print('was in graph', e)
             continue
     print("end\n", file=open(logfile, 'a'))
+
+
+# def replan_diff_objective():
+#     logfile = 'compare5.txt'
+#     print(f"beginning fig1 out of graph----- ({constr_time})\n",
+#           file=open(logfile, 'a'))
+#     for i in range(5, 56):
+#         try:
+#             new_idx = (i * 378467) % (len(env)-2)
+#             new_pos = env[new_idx]
+
+#             new_region = world[new_idx]
+
+#             print(new_pos)
+
+#             next_step = "right" if (i * 10039) % 11 >= 6 else "left"
+#             # print(new_idx, new_pos, endpos, next_step)
+
+#             # plt.figure(dpi=300, figsize=(6, 3))
+
+#             no_steps = replan_from_out(
+#                 model, new_pos, new_region, next_step, root, gr, logfile)
+
+#             new_model = gp.Model()
+
+#             biped.get_constraints(
+#                 new_model, world, start=new_pos, end=endpos, no_regions=len(world), steps_taken=no_steps, reachable_distance=reachable_distance, logfile=logfile, foot=next_step)
+
+#             print("", file=open(logfile, 'a'))
+#         except GException as e:
+#             # print('was in graph', e)
+#             continue
+#     print("end\n", file=open(logfile, 'a'))
 
 
 # results_unexpected_outgraph()
